@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" DefaultTargets="SelfUpdate" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<SelfUpdate Include="$(MSBuildThisFileDirectory)*.props" />
-		<SelfUpdate Include="$(MSBuildThisFileDirectory)*.targets" />
+		<SelfUpdate Include="$(MSBuildThisFileDirectory)*.targets" Exclude="$(MSBuildThisFileFullPath)" />
 	</ItemGroup>
 	
 	<Target Name="SelfUpdate" Returns="@(_SelfUpdated)">
