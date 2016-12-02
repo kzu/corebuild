@@ -109,5 +109,5 @@
 		<Etag Condition="'$(Etag)' == ''">asdf</Etag>
 	</PropertyGroup>
 
-	<Import Project="XmlPoke.targets" />
+	<Import Project="XmlPoke.targets" Condition="'$(XmlPokeImported)' != 'true'" />
 </Project>

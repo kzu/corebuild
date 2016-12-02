@@ -2,6 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
+		<XmlPokeImported>true</XmlPokeImported>
 		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')">$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
 		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
 		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v12.0.dll')">$(MSBuildBinPath)\Microsoft.Build.Tasks.v12.0.dll</CodeTaskAssembly>
