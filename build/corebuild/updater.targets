@@ -99,6 +99,7 @@
 
 	<PropertyGroup>
 		<UpdaterImported>true</UpdaterImported>
+		<Etag>asdf</Etag>
 	</PropertyGroup>
 
 </Project>

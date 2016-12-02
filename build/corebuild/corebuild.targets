@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 
-  <Target Name="AddFacadeReferences" />
+	<Target Name="AddFacadeReferences" />
 	<Target Name="GetReferenceAssemblyPaths" />
 	<Target Name="PrepareResources" />
-	
-  <Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets')" />
+
+	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets')" />
+
+	<PropertyGroup>
+		<!-- For self-updating -->
+		<Etag>asdf</Etag>
+	</PropertyGroup>
 </Project>
