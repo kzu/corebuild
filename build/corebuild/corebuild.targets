@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="'$(SelfUpdating)' != 'true'" />
 
 	<Target Name="AddFacadeReferences" />
 	<Target Name="GetReferenceAssemblyPaths" />
 	<Target Name="PrepareResources" />
 
-	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets')" />
+	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets"
+			Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets') And '$(SelfUpdating)' != 'true'" />
 
 	<!-- For self-updating -->
 	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
@@ -17,5 +18,5 @@
 	</PropertyGroup>
 
 	<!-- If we're being imported from another project, import the update-all version of SelfUpdate -->
-	<Import Project="selfupdate.targets" Condition="'$(MSBuildProjectFullPath)' != '(MSBuildThisFileFullPath)'" />
+	<Import Project="selfupdate.targets" Condition="'$(MSBuildProjectFullPath)' != '(MSBuildThisFileFullPath)' And '$(SelfUpdating)' != 'true'" />
 </Project>

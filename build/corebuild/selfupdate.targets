@@ -6,7 +6,7 @@
 	</ItemGroup>
 	
 	<Target Name="SelfUpdate" Returns="@(_SelfUpdated)">
-		<MSBuild Projects="@(SelfUpdate)" Targets="SelfUpdate">
+		<MSBuild Projects="@(SelfUpdate)" Properties="SelfUpdating=true" Targets="SelfUpdate">
 			<Output TaskParameter="TargetOutputs" ItemName="_SelfUpdated" />
 		</MSBuild>
 	</Target>
