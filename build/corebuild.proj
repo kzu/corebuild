@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--  
+	This is a sample default build script that showcases the capabilities 
+	of corebuild. Feel free to remove all comments and sample elements 
+	except for the imports and the Etag property, which allows for 
+	updating the corebuild imports.
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="corebuild\build.props" />
+  <Import Project="corebuild\corebuild.props" />
 
 	<ItemGroup>
 		<!-- Default behavior like you'd expect. It will be copied if changed -->
@@ -17,5 +23,10 @@
 		<DumpItems Items="@(PackageReference)" ItemName="PackageReference" />
 	</Target>
 
-	<Import Project="corebuild\build.targets" />
+	<Import Project="corebuild\corebuild.targets" />
+
+	<PropertyGroup>
+		<!-- For self-updating -->
+		<Etag>asdf</Etag>
+	</PropertyGroup>
 </Project>

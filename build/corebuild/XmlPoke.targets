@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')">$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
+		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
+		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '' And Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v12.0.dll')">$(MSBuildBinPath)\Microsoft.Build.Tasks.v12.0.dll</CodeTaskAssembly>
+		<!-- In VS2013, the assembly contains the VS version. -->
+		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' == '12.0'">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</CodeTaskAssembly>
+		<!-- In VS2015+, the assembly was renamed, hopefully this will be the last condition! -->
+		<CodeTaskAssembly Condition="'$(CodeTaskAssembly)' == '' And '$(MSBuildAssemblyVersion)' != '' And '$(MSBuildAssemblyVersion)' &gt;= '14.0'">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</CodeTaskAssembly>
+	</PropertyGroup>
+
+	<!-- Build-in XmlPoke has a bug where it doesn't save the changed files -->
+	<UsingTask TaskName="XmlPoke" TaskFactory="CodeTaskFactory" AssemblyFile="$(CodeTaskAssembly)">
+		<ParameterGroup>
+			<Namespaces />
+			<Query />
+			<Value ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+			<XmlInputPath ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Core" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Xml.Linq" />
+			<Using Namespace="Microsoft.Build.Framework" />
+			<Using Namespace="System.Xml" />
+			<Using Namespace="System.Xml.Linq" />
+			<Using Namespace="System.Xml.XPath" />
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[			
+            var xmlns = new XmlNamespaceManager(new NameTable());
+            if (!string.IsNullOrEmpty(Namespaces))
+            {
+                using (var reader = XmlReader.Create(new StringReader(Namespaces), new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                {
+                    while (reader.Read())
+                    {
+                        var prefix = reader.GetAttribute("Prefix");
+                        var uri = reader.GetAttribute("Uri");
+                        xmlns.AddNamespace(prefix, uri);
+                    }
+                }
+            }
+
+            var doc = XDocument.Load(XmlInputPath.GetMetadata("FullPath"), LoadOptions.PreserveWhitespace);
+			var expr = doc.CreateNavigator().Compile(Query);
+			expr.SetContext (xmlns);
+
+			var replacements = 0;
+            foreach (var node in doc.CreateNavigator().Select(expr).OfType<XPathNavigator>().Select(x => x.UnderlyingObject))
+            {
+				var attr = node as XAttribute;
+				var elem = node as XElement;
+				if (attr != null) {
+					attr.SetValue (Value.ItemSpec);
+					replacements++;
+				} else if (elem != null) {
+					elem.SetValue (Value.ItemSpec);
+					replacements++;
+				}
+            }
+
+			if (replacements != 0) {
+				Log.LogMessage ("Made {0} replacement(s).", replacements);
+				doc.Save(XmlInputPath.GetMetadata ("FullPath"), SaveOptions.DisableFormatting);
+			} else {
+				Log.LogMessage("No nodes were affected.");
+			}
+			]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+	<!-- For self-updating -->
+	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
+	<PropertyGroup Condition="'$(Etag)' == ''">
+		<Etag>902b38a133236c96ca95315e2b7b7e104cea6f65</Etag>
+		<_Self>$(MSBuildThisFileFullPath)</_Self>
+		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
+	</PropertyGroup>
+</Project>

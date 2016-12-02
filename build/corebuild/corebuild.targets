@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 
@@ -8,8 +8,14 @@
 
 	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets')" />
 
+	<!-- For self-updating -->
+	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
 	<PropertyGroup>
-		<!-- For self-updating -->
 		<Etag>asdf</Etag>
+		<_Self>$(MSBuildThisFileFullPath)</_Self>
+		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
 	</PropertyGroup>
+
+	<!-- If we're being imported from another project, import the update-all version of SelfUpdate -->
+	<Import Project="selfupdate.targets" Condition="'$(MSBuildProjectFullPath)' != '(MSBuildThisFileFullPath)'" />
 </Project>

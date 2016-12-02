@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
 
@@ -17,8 +17,11 @@
 
 	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props')" />
 
+	<!-- For self-updating -->
+	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
 	<PropertyGroup>
-		<!-- For self-updating -->
-		<Etag>asdf</Etag>
+		<Etag>9ef70c02a361dfdb22efc8f83a29fb813452f01c</Etag>
+		<_Self>$(MSBuildThisFileFullPath)</_Self>
+		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
 	</PropertyGroup>
 </Project>
