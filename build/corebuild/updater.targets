@@ -3,7 +3,7 @@
 
 	<PropertyGroup>
 		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
-		<Curl>curl -k -f -L</Curl>
+		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
 		<_XmlNs>&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003'/&gt;</_XmlNs>
 		<_SelfBaseUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild</_SelfBaseUrl>
 		<_Self>$(MSBuildThisFileFullPath)</_Self>

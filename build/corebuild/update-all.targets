@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="SelfUpdate" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<_Updatable Include="$(MSBuildThisFileDirectory)*.props" />
+		<_Updatable Include="$(MSBuildThisFileDirectory)*.targets" Exclude="$(MSBuildThisFileFullPath)" />
+	</ItemGroup>
+	
+	<Target Name="Update" Returns="@(_Updated)">
+		<MSBuild Projects="@(_Updatable)" Properties="IsUpdating=true" Targets="Update">
+			<Output TaskParameter="TargetOutputs" ItemName="_Updated" />
+		</MSBuild>
+	</Target>
+</Project>

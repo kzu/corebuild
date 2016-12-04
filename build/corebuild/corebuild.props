@@ -1,21 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-			Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props') And '$(SelfUpdating)' != 'true'" />
-
 	<PropertyGroup>
+		<!-- Instruct NuGet to perform a NETCore-like restore -->
 		<TargetFramework>netcore50</TargetFramework>
-		<TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-		<TargetFrameworkVersion>5.0</TargetFrameworkVersion>
-		<TargetFrameworkMoniker>.NETCore,Version=5.0</TargetFrameworkMoniker>
+		<!-- Specify a well-known usually ignored directory for the generated targets -->
 		<RestoreOutputPath>$(MSBuildThisFileDirectory).nuget</RestoreOutputPath>
-		<OutputPath>bin</OutputPath>
-		<OutputType>library</OutputType>
-		<BaseIntermediateOutputPath>$(RestoreOutputPath)\</BaseIntermediateOutputPath>
-		<IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-		<CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
 	</PropertyGroup>
 
+	<!-- NuGet generated targets -->
 	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props" 
 			Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props') And '$(SelfUpdating)' != 'true'" />
 

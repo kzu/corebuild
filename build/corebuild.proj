@@ -1,32 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--  
 	This is a sample default build script that showcases the capabilities 
-	of corebuild. Feel free to remove all comments and sample elements 
-	except for the imports and the Etag property, which allows for 
-	updating the corebuild imports.
+	of corebuild. Feel free to remove all comments and sample elements.
+	
+	To update to the latest version of the corebuild targets imported 
+	by this project, just run the `Update` target.
 -->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="corebuild\corebuild.props" />
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="corebuild\corebuild.props" />
 
 	<ItemGroup>
-		<!-- Default behavior like you'd expect. It will be copied if changed -->
-		<Content Include="Readme.txt" Condition="Exists('Readme.txt')" CopyToOutputDirectory="PreserveNewest" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<!-- MSBuild /t:Restore will restore this package like in .NETCore -->	
+		<!-- MSBuild /t:Restore will restore this package like in .NETCore -->
 		<PackageReference Include="MSBuilder.DumpItems" Version="0.2.1" />
 	</ItemGroup>
 
-	<Target Name="CoreCompile">
-		<!-- Once the Restore is done, /t:Build will invoke CoreBuild, where we use a custom task -->
+	<Target Name="Build">
+		<!-- Once the Restore is done we use a custom task from the NuGet package -->
 		<DumpItems Items="@(PackageReference)" ItemName="PackageReference" />
 	</Target>
 
 	<Import Project="corebuild\corebuild.targets" />
-
-	<PropertyGroup>
-		<!-- For self-updating -->
-		<Etag>asdf</Etag>
-	</PropertyGroup>
 </Project>
