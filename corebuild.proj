@@ -1,17 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- 
-====================================================================
-			CoreBuild Boostrapper
+=================================================================
+                   CoreBuild Boostrapper
 
-This targets file performs the initial download, update and setup 
-of corebuild. It contains a single target, the default, Update. 
-So running `msbuild` right after downloading it, will properly 
-set up your build project by downloading the additional files 
-necessaray for corebuild.
-
-Once the update is performed, this project file will be replaced 
-with a clean starting point for authoring a corebuild script.
-====================================================================
+This targets will perform initial download, update and setup of 
+corebuild. Just run `msbuild` (or `msbuild /t:update`) and it 
+will be replaced with an actual clean starting point for 
+authoring a corebuild script.
+=================================================================
 -->
 <Project DefaultTargets="Update" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
