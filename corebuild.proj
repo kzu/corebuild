@@ -1,72 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<!-- 
+====================================================================
+			CoreBuild Boostrapper
+
+This targets file performs the initial download, update and setup 
+of corebuild. It contains a single target, the default, Update. 
+So running `msbuild` right after downloading it, will properly 
+set up your build project by downloading the additional files 
+necessaray for corebuild.
+
+Once the update is performed, this project file will be replaced 
+with a clean starting point for authoring a corebuild script.
+====================================================================
+-->
+<Project DefaultTargets="Update" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
 	<PropertyGroup>
-		<BaseUrl Condition=" '$(BaseUrl)' == '' ">https://raw.githubusercontent.com/kzu/corebuild/master/</BaseUrl>
-		<TargetsFile>$(MSBuildThisFilename)$(MSBuildThisFileExtension)</TargetsFile>
+		<BaseUrl Condition=" '$(BaseUrl)' == '' ">https://raw.githubusercontent.com/kzu/corebuild/master/build/</BaseUrl>
+		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
+		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
 	</PropertyGroup>
 
-	<Target Name="Update" DependsOnTargets="DownloadCurl">
-		<Exec Command='$(Curl) -I "$(TEMP)\$(TargetsFile)" "$(BaseUrl)$(TargetsFile)"'
-			  StandardOutputImportance='low'
-			  ConsoleToMSBuild="true">
-			<Output TaskParameter="ConsoleOutput" ItemName="HttpResponse"/>
-		</Exec>
+	<ItemGroup>
+		<Updatable Include="corebuild.proj" />
+		<Updatable Include="project.json" />
+		<Updatable Include="corebuild/corebuild.props" />
+		<Updatable Include="corebuild/corebuild.targets" />
+		<Updatable Include="corebuild/update-all.targets" />
+		<Updatable Include="corebuild/updater.targets" />
+		<Updatable Include="corebuild/XmlPoke.targets" />
+	</ItemGroup>
+
+	<Target Name="Update">
+		<MakeDir Directories="$(MSBuildThisFileDirectory)corebuild" Condition="!Exists('$(MSBuildThisFileDirectory)corebuild')"	 />
+		<Exec Command='$(Curl) -o "$(MSBuildThisFileDirectory)%(Updatable.Identity)" "$(BaseUrl)%(Updatable.Identity)"'
+			  Condition="'$(OS)' != 'Windows_NT'"/>
+
+		<Exec Command='"$(PS)" -NoProfile -Command "&amp; { Invoke-WebRequest -Uri $(BaseUrl)%(Updatable.Identity) -OutFile &quot;$(MSBuildThisFileDirectory)%(Updatable.Identity)&quot; }"'
+			  EchoOff="false"
+			  Condition="'$(OS)' == 'Windows_NT'" />
 		
-		<ItemGroup>
-			<ETag Include="@(HttpResponse)" Condition="$([System.String]::new('%(Identity)').StartsWith('ETag:')) " />
-		</ItemGroup>
-		<PropertyGroup>
-			<ETag>@(ETag)</ETag>
-			<ETag>$(ETag.Substring(5).Trim().TrimStart('"').TrimEnd('"'))</ETag>
-
-			<XmlNs>&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003'/&gt;</XmlNs>
-			<UpdateFile Condition=" '$(UpdateFile)' == '' ">$(MSBuildThisFileFullPath)</UpdateFile>
-		</PropertyGroup>
-
-		<XmlPeek Namespaces="$(XmlNs)" 
-				 XmlInputPath="$(MSBuildThisFileFullPath)" 
-				 Query="/msb:Project/msb:PropertyGroup/msb:NuGetRestoreETag/text()">
-			<Output TaskParameter="Result" PropertyName="CurrentETag" />
-		</XmlPeek>
-
-		<Message Importance="high" 
-				 Text="New version found, updating $(TargetsFile)."
-				 Condition=" '$(CurrentETag)' != '$(ETag)' " />
-		<Message Importance="high"
-				 Text="No updates found for $(TargetsFile)."
-				 Condition=" '$(CurrentETag)' == '$(ETag)' " />
-
-		<!-- If the retrieved ETag doesn't match the saved one, we need to update the whole file -->
-		<Exec Command='$(Curl) -o "$(UpdateFile)" "$(BaseUrl)$(TargetsFile)"'
-			  StandardOutputImportance='low'			  
-			  Condition=" '$(CurrentETag)' != '$(ETag)' " />
-
-		<!-- NOTE: known issue, XmlPoke removes the whitespace, 
-			 but then users aren't intended to edit the updated 
-			 file but the one on the repo instead, via PRs :) -->
-		<XmlPoke Namespaces="$(XmlNs)"
-				 XmlInputPath="$(UpdateFile)"
-				 Query="/msb:Project/msb:PropertyGroup/msb:NuGetRestoreETag"
-				 Value="$(ETag)"
-				 Condition=" '$(CurrentETag)' != '$(ETag)' " />		
+		<!-- Self-update the downloaded files so they get the proper ETags -->
+		<Exec Command='"$(MSBuildToolsPath)\MSBuild.exe "$(MSBuildThisFileFullPath)" /t:Update' />
 	</Target>
-
-	<Target Name="DownloadNuGet" DependsOnTargets="DownloadCurl" Condition=" !Exists('$(NuGet)') ">
-		<MakeDir Directories="$(NuGetPath)" Condition=" !Exists('$(NuGetPath)') " />
-		<Exec Command='$(Curl) -o "$(NuGet)" "$(NuGetUrl)"' />
-	</Target>
-
-	<Target Name="DownloadCurl" Condition=" '$(OS)' == 'Windows_NT' And !Exists('$(TEMP)\curl.exe') ">
-		<PropertyGroup>
-			<PowerShell Condition=" '$(PowerShell)' == '' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShell>
-		</PropertyGroup>
-
-		<Exec Command="&quot;$(PowerShell)&quot; -NoProfile -Command &quot;&amp; { (New-Object System.Net.WebClient).DownloadFile('$(CurlUrl)', '$(TEMP)\curl.exe') }&quot;" />
-	</Target>
-
-	<PropertyGroup>
-		<NuGetRestoreImported>true</NuGetRestoreImported>
-		<NuGetRestoreETag>1D1D4F4E2A49280</NuGetRestoreETag>
-	</PropertyGroup>
 
 </Project>

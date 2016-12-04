@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="SelfUpdate" InitialTargets="_VerifyInputs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Update" InitialTargets="_VerifyInputs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
 		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
@@ -17,7 +17,7 @@
 		</UpdateDependsOn>
 	</PropertyGroup>
 
-	<Target Name="SelfUpdate" DependsOnTargets="$(UpdateDependsOn)" Returns="$(_LocalEtag)" />
+	<Target Name="Update" DependsOnTargets="$(UpdateDependsOn)" Returns="$(_LocalEtag)" />
 
 	<Target Name="_ReadLocalEtag">
 		<XmlPeek Namespaces="$(_XmlNs)"
