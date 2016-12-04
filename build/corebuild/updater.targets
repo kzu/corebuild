@@ -8,6 +8,7 @@
 		<_SelfBaseUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild</_SelfBaseUrl>
 		<_Self>$(MSBuildThisFileFullPath)</_Self>
 		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
+		<_Etag />
 
 		<UpdateDependsOn>
 			_ReadLocalEtag;
@@ -22,7 +23,7 @@
 	<Target Name="_ReadLocalEtag">
 		<XmlPeek Namespaces="$(_XmlNs)"
 				 XmlInputPath="$(_Self)"
-				 Query="/msb:Project/msb:PropertyGroup/msb:Etag/text()">
+				 Query="/msb:Project/msb:PropertyGroup/msb:_Etag/text()">
 			<Output TaskParameter="Result" PropertyName="_LocalEtag" />
 		</XmlPeek>
 	</Target>
@@ -72,7 +73,7 @@
 			 file but the one on the repo instead, via PRs :) -->
 		<XmlPoke Namespaces="$(_XmlNs)"
 				 XmlInputPath="$(_Self)"
-				 Query="/msb:Project/msb:PropertyGroup/msb:Etag"
+				 Query="/msb:Project/msb:PropertyGroup/msb:_Etag"
 				 Value="$(_RemoteEtag)" />
 	</Target>
 
@@ -106,7 +107,6 @@
 
 	<PropertyGroup>
 		<UpdaterImported>true</UpdaterImported>
-		<Etag Condition="'$(Etag)' == ''">asdf</Etag>
 	</PropertyGroup>
 
 	<Import Project="XmlPoke.targets" Condition="'$(XmlPokeImported)' != 'true'" />

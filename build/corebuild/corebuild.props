@@ -14,7 +14,7 @@
 	<!-- For self-updating -->
 	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
 	<PropertyGroup>
-		<Etag>721c782777ee673cab2113b081dadca22115f4c2</Etag>
+		<_Etag />
 		<_Self>$(MSBuildThisFileFullPath)</_Self>
 		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
 	</PropertyGroup>

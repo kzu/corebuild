@@ -15,7 +15,7 @@
 	<!-- For self-updating -->
 	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
 	<PropertyGroup>
-		<Etag>asdf</Etag>
+		<_Etag />
 		<_Self>$(MSBuildThisFileFullPath)</_Self>
 		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
 	</PropertyGroup>

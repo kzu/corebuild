@@ -1,4 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	XmlPoke with format/whitespace preservation turned on
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
@@ -75,8 +78,8 @@
 
 	<!-- For self-updating -->
 	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
-	<PropertyGroup Condition="'$(Etag)' == ''">
-		<Etag>902b38a133236c96ca95315e2b7b7e104cea6f65</Etag>
+	<PropertyGroup Condition="'$(MSBuildProjectFullPath)' == '(MSBuildThisFileFullPath)'">
+		<_Etag />
 		<_Self>$(MSBuildThisFileFullPath)</_Self>
 		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
 	</PropertyGroup>
