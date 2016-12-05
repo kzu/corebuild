@@ -28,7 +28,10 @@
 	<Target Name="_FetchRemoteETag" DependsOnTargets="_FetchRemoteETagPS;_FetchRemoteETagCurl" />
 
 	<Target Name="_FetchRemoteETagPS">
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD).Headers.ETag }&quot;" StandardOutputImportance="low" EchoOff="true" ConsoleToMSBuild="true">
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD).Headers.ETag }&quot;" 
+			  StandardOutputImportance="low" 
+			  EchoOff="true" 
+			  ConsoleToMSBuild="true">
 			<Output TaskParameter="ConsoleOutput" PropertyName="_RemoteETag" />
 		</Exec>
 		<PropertyGroup>
@@ -37,7 +40,9 @@
 	</Target>
 	
 	<Target Name="_FetchRemoteETagCurl" Condition="'$(OS)' != 'Windows_NT'">
-		<Exec Command="$(Curl) -I &quot;$(UpdateUrl)&quot;" StandardOutputImportance="low" ConsoleToMSBuild="true">
+		<Exec Command="$(Curl) -I &quot;$(UpdateUrl)&quot;" 
+			  StandardOutputImportance="low" 
+			  ConsoleToMSBuild="true">
 			<Output TaskParameter="ConsoleOutput" ItemName="HttpResponse" />
 		</Exec>
 
@@ -62,8 +67,8 @@
 
 		<XmlPoke Namespaces="$(_MSBuildXmlNs)"
 				 XmlInputPath="$(UpdateTarget)"
-				 Query="/msb:Project/msb:PropertyGroup/msb:Etag"
-				 Value="$(_RemoteEtag)" />
+				 Query="/msb:Project/msb:PropertyGroup/msb:ETag"
+				 Value="$(_RemoteETag)" />
 	</Target>
 
 	<Target Name="_UpdateETagStatus" Returns="$(_LocalETag)">
