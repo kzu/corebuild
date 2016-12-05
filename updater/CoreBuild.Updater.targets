@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Update" InitialTargets="_VerifyInputs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
 		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
@@ -8,7 +8,8 @@
 
 		<_MSBuildXmlNs>&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003'/&gt;</_MSBuildXmlNs>
 
-		<UpdateDependsOn>
+		<UpdateDependsOn Condition="'$(UpdateUrl)' != ''">
+			_VerifyInputs;
 			_ReadLocalETag;
 			_FetchRemoteETag;
 			_UpdateLocalFile;
@@ -27,7 +28,7 @@
 	<Target Name="_FetchRemoteETag" DependsOnTargets="_FetchRemoteETagPS;_FetchRemoteETagCurl" />
 
 	<Target Name="_FetchRemoteETagPS">
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateTargetUrl) -Method HEAD).Headers.ETag }&quot;" StandardOutputImportance="low" EchoOff="true" ConsoleToMSBuild="true">
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD).Headers.ETag }&quot;" StandardOutputImportance="low" EchoOff="true" ConsoleToMSBuild="true">
 			<Output TaskParameter="ConsoleOutput" PropertyName="_RemoteETag" />
 		</Exec>
 		<PropertyGroup>
@@ -36,7 +37,7 @@
 	</Target>
 	
 	<Target Name="_FetchRemoteETagCurl" Condition="'$(OS)' != 'Windows_NT'">
-		<Exec Command="$(Curl) -I &quot;$(UpdateTargetUrl)&quot;" StandardOutputImportance="low" ConsoleToMSBuild="true">
+		<Exec Command="$(Curl) -I &quot;$(UpdateUrl)&quot;" StandardOutputImportance="low" ConsoleToMSBuild="true">
 			<Output TaskParameter="ConsoleOutput" ItemName="HttpResponse" />
 		</Exec>
 
@@ -52,9 +53,9 @@
 	</Target>
 
 	<Target Name="_UpdateLocalFile" Condition="'$(_LocalETag)' != '$(_RemoteETag)'">
-		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateTargetUrl)&quot;" Condition="'$(OS)' != 'Windows_NT'" />
+		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateUrl)&quot;" Condition="'$(OS)' != 'Windows_NT'" />
 
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateTargetUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'" />
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'" />
 	</Target>
 
 	<Target Name="_UpdateETagStatus" Returns="$(_LocalETag)">
@@ -75,8 +76,6 @@
 
 		<!-- Should fail on *nix if curl isn't found. -->
 		<Exec Command="command -v curl" Condition="'$(OS)' != 'Windows_NT'" StandardOutputImportance="low" />
-
-		<Error Condition="'$(UpdateUrl)' == ''" Text="Property UpdateUrl is required." />
 	</Target>
 
 	<PropertyGroup>
