@@ -55,11 +55,6 @@
 		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateTargetUrl)&quot;" Condition="'$(OS)' != 'Windows_NT'" />
 
 		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateTargetUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'" />
-
-		<!-- NOTE: known issue, XmlPoke removes the whitespace, 
-			 but then users aren't intended to edit the updated 
-			 file but the one on the repo instead, via PRs :) -->
-
 	</Target>
 
 	<Target Name="_UpdateETagStatus" Returns="$(_LocalETag)">

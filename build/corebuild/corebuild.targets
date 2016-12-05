@@ -18,7 +18,6 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<UpdateUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild/corebuild.targets</UpdateUrl>
 		<ETag />
 	</PropertyGroup>
 

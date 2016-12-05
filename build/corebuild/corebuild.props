@@ -5,14 +5,10 @@
 		<TargetFramework>netcore50</TargetFramework>
 		<!-- Specify a well-known usually ignored directory for the generated targets -->
 		<RestoreOutputPath>$(MSBuildThisFileDirectory).nuget</RestoreOutputPath>
+		<ETag />
 		<CoreBuildPropsImported>true</CoreBuildPropsImported>
 	</PropertyGroup>
 
 	<!-- NuGet generated targets -->
 	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props')" />
-
-	<PropertyGroup>
-		<UpdateUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild/corebuild.props</UpdateUrl>
-		<ETag />
-	</PropertyGroup>
 </Project>
