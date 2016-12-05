@@ -6,7 +6,7 @@
 	</ItemGroup>
 	
 	<Target Name="Update" Returns="@(_Updated)">
-		<MSBuild Projects="@(_Updatable)" Properties="IsUpdating=true" Targets="Update">
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Properties="UpdateTarget=%(_Updatable.FullPath);IsUpdating=true" Targets="Update">
 			<Output TaskParameter="TargetOutputs" ItemName="_Updated" />
 		</MSBuild>
 	</Target>
