@@ -35,6 +35,7 @@ authoring a corebuild script.
 			  Condition="'$(OS)' == 'Windows_NT'" />
 		
 		<!-- Self-update the downloaded files so they get the proper ETags -->
+		<Exec Command='"$(MSBuildToolsPath)\MSBuild.exe" "$(MSBuildThisFileFullPath)" /t:Restore' />
 		<Exec Command='"$(MSBuildToolsPath)\MSBuild.exe" "$(MSBuildThisFileFullPath)" /t:Update' />
 	</Target>
 
