@@ -53,9 +53,17 @@
 	</Target>
 
 	<Target Name="_UpdateLocalFile" Condition="'$(_LocalETag)' != '$(_RemoteETag)'">
-		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateUrl)&quot;" Condition="'$(OS)' != 'Windows_NT'" />
+		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateUrl)&quot;" 
+			  Condition="'$(OS)' != 'Windows_NT'" />
 
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'" />
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" 
+			  EchoOff="true" 
+			  Condition="'$(OS)' == 'Windows_NT'" />
+
+		<XmlPoke Namespaces="$(_MSBuildXmlNs)"
+				 XmlInputPath="$(UpdateTarget)"
+				 Query="/msb:Project/msb:PropertyGroup/msb:Etag"
+				 Value="$(_RemoteEtag)" />
 	</Target>
 
 	<Target Name="_UpdateETagStatus" Returns="$(_LocalETag)">
