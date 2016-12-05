@@ -5,6 +5,7 @@
 		<TargetFramework>netcore50</TargetFramework>
 		<!-- Specify a well-known usually ignored directory for the generated targets -->
 		<RestoreOutputPath>$(MSBuildThisFileDirectory).nuget</RestoreOutputPath>
+		<CoreBuildPropsImported>true</CoreBuildPropsImported>
 	</PropertyGroup>
 
 	<!-- NuGet generated targets -->
