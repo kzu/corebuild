@@ -85,8 +85,18 @@ packages.
 In order to enable package restore from MSBuild, `corebuild` opts-in to the NuGet 4.0 features available 
 to .NET Core projects, by specifying `netcore50` as its [TargetFramework](https://github.com/kzu/corebuild/blob/master/build/corebuild/corebuild.props#L5).
 
-NuGet will automatically generate the restore artifacts in the `.nuget` folder inside `corebuild` alongise your 
-`corebuild.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`).
+NuGet will automatically generate the restore artifacts in the `.nuget` folder inside `corebuild` alongside your 
+`corebuild.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`):
+
+		\root
+			- corebuild.proj
+			- project.json
+			\corebuild
+				- corebuild.props     [self-updating via /t:Update]
+				- corebuild.targets   [self-updating via /t:Update]
+				- update.targets      [self-updating via /t:Update]
+				\.nuget
+					- [nuget restore artifacts here, updated by /t:Restore]
 
 The `corebuild.props` and `corebuild.targets` then import the generated targets from NuGet, allowing 
 your main `corebuild.proj` project to readily consume their artifacts.
