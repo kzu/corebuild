@@ -11,7 +11,7 @@
 	<Target Name="Update" Returns="@(_Updated)">
 		<MSBuild Projects="$(MSBuildProjectFullPath)"
 		 		 Targets="Update"
-		 		 Properties="UpdateTarget=%(_Updatable.FullPath);UpdateTargetUrl=$(UpdateBaseUrl)/%(_Updatable.Filename)%(_Updatable.Extension);IsUpdating=true">
+		 		 Properties="UpdateTarget=%(_Updatable.FullPath);UpdateUrl=$(UpdateBaseUrl)/%(_Updatable.Filename)%(_Updatable.Extension);IsUpdating=true">
 			<Output TaskParameter="TargetOutputs" ItemName="_Updated" />
 		</MSBuild>
 	</Target>
