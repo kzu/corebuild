@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>CoreBuild.Updater</id>
+        <version>0.1.0</version>
+        <title>CoreBuild: Updater</title>
+        <authors>Daniel Cazzulino</authors>
+        <licenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/kzu/corebuild/</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Provides the Update target so that target files can update themselves from an $(UpdateUrl) by comparing a defined $(ETag) property.</description>
+        <copyright>Copyright 2016</copyright>
+        <tags>msbuild corebuild ci</tags>
+		<developmentDependency>true</developmentDependency>
+	</metadata>
+	<files>
+		<file src="Readme.txt" />
+		<file src="CoreBuild.Updater.targets" target="build\CoreBuild.Updater.targets" />
+	</files>    
+</package>

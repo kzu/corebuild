@@ -6,20 +6,21 @@
 	</PropertyGroup>
 	<Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" />
 
-	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets"
-			Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets') And '$(SelfUpdating)' != 'true'" />
+	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.targets') And '$(IsUpdating)' != 'true'" />
 
 	<!-- Unfortunately, NuGet restore depends on this target for its _GenerateRestoreProjectReferencePaths target -->
 	<Target Name="_SplitProjectReferencesByFileExistence" />
 	
-	<!-- For self-updating -->
-	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
+	<ItemGroup>
+		<PackageReference Include="CoreBuild.Updater" Version="*" />
+		<PackageReference Include="MSBuilder.XmlPoke" Version="*" />
+	</ItemGroup>
+
 	<PropertyGroup>
-		<_Etag />
-		<_Self>$(MSBuildThisFileFullPath)</_Self>
-		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
+		<UpdateUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild/corebuild.targets</UpdateUrl>
+		<ETag />
 	</PropertyGroup>
 
 	<!-- If we're being imported from another project, import the update-all version of Update -->
-	<Import Project="update-all.targets" Condition="'$(MSBuildProjectFullPath)' != '(MSBuildThisFileFullPath)' And '$(IsUpdating)' != 'true'" />
+	<Import Project="update.targets" Condition="'$(MSBuildProjectFullPath)' != '(MSBuildThisFileFullPath)' And '$(IsUpdating)' != 'true'" />	
 </Project>

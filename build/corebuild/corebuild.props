@@ -8,14 +8,10 @@
 	</PropertyGroup>
 
 	<!-- NuGet generated targets -->
-	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props" 
-			Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props') And '$(SelfUpdating)' != 'true'" />
+	<Import Project="$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props" Condition="Exists('$(RestoreOutputPath)\$(MSBuildProjectFile).nuget.g.props') And '$(IsUpdating)' != 'true'" />
 
-	<!-- For self-updating -->
-	<Import Project="updater.targets" Condition="'$(UpdaterImported)' != 'true'" />
 	<PropertyGroup>
-		<_Etag />
-		<_Self>$(MSBuildThisFileFullPath)</_Self>
-		<_SelfUrl>$(_SelfBaseUrl)/$(MSBuildThisFilename)$(MSBuildThisFileExtension)</_SelfUrl>
+		<UpdateUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/corebuild/corebuild.props</UpdateUrl>
+		<ETag />
 	</PropertyGroup>
 </Project>

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Update" InitialTargets="_VerifyInputs" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
+		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
+		<UpdateTarget Condition="'$(UpdateTarget)' == ''">$(MSBuildProjectFullPath)</UpdateTarget>
+
+		<_MSBuildXmlNs>&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003'/&gt;</_MSBuildXmlNs>
+
+		<UpdateDependsOn>
+			_ReadLocalETag;
+			_FetchRemoteETag;
+			_UpdateLocalFile;
+			_UpdateETagStatus
+		</UpdateDependsOn>
+	</PropertyGroup>
+
+	<Target Name="Update" DependsOnTargets="$(UpdateDependsOn)" Returns="$(_LocalETag)" />
+
+	<Target Name="_ReadLocalETag">
+		<XmlPeek Namespaces="$(_MSBuildXmlNs)" XmlInputPath="$(UpdateTarget)" Query="/msb:Project/msb:PropertyGroup/msb:ETag/text()">
+			<Output TaskParameter="Result" PropertyName="_LocalETag" />
+		</XmlPeek>
+	</Target>
+
+	<Target Name="_FetchRemoteETag" DependsOnTargets="_FetchRemoteETagPS;_FetchRemoteETagCurl" />
+
+	<Target Name="_FetchRemoteETagPS">
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateTargetUrl) -Method HEAD).Headers.ETag }&quot;" StandardOutputImportance="low" EchoOff="true" ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput" PropertyName="_RemoteETag" />
+		</Exec>
+		<PropertyGroup>
+			<_RemoteETag>$(_RemoteETag.Trim('"'))</_RemoteETag>
+		</PropertyGroup>
+	</Target>
+	
+	<Target Name="_FetchRemoteETagCurl" Condition="'$(OS)' != 'Windows_NT'">
+		<Exec Command="$(Curl) -I &quot;$(UpdateTargetUrl)&quot;" StandardOutputImportance="low" ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput" ItemName="HttpResponse" />
+		</Exec>
+
+		<ItemGroup>
+			<!-- Each line becomes an item, filter the one for ETag header -->
+			<_RemoteETag Include="@(HttpResponse)" Condition="$([System.String]::new('%(Identity)').StartsWith('ETag:')) " />
+		</ItemGroup>
+		<PropertyGroup>
+			<!-- Turn the item into a property, so we can do property functions on it -->
+			<_RemoteETag>@(_RemoteETag)</_RemoteETag>
+			<_RemoteETag>$(_RemoteETag.Substring(5).Trim().TrimStart('"').TrimEnd('"'))</_RemoteETag>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_UpdateLocalFile" Condition="'$(_LocalETag)' != '$(_RemoteETag)'">
+		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateTargetUrl)&quot;" Condition="'$(OS)' != 'Windows_NT'" />
+
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateTargetUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'" />
+
+		<!-- NOTE: known issue, XmlPoke removes the whitespace, 
+			 but then users aren't intended to edit the updated 
+			 file but the one on the repo instead, via PRs :) -->
+
+	</Target>
+
+	<Target Name="_UpdateETagStatus" Returns="$(_LocalETag)">
+		<Message Importance="high" Text="New version found, updated $(UpdateTarget)." Condition="'$(_LocalETag)' != '$(_RemoteETag)'" />	 
+		<Message Importance="high" Text="No updates found for $(UpdateTarget)." Condition="'$(_LocalETag)' == '$(_RemoteETag)'" />
+
+		<PropertyGroup Condition="'$(_LocalETag)' != '$(_RemoteETag)'">
+			<_LocalETag>$(_RemoteETag)</_LocalETag>
+		</PropertyGroup>
+	</Target>
+	
+	<Target Name="_VerifyInputs">
+		<!-- Ensure PowerShell v3+ -->
+		<Exec Command="$(PS) -NoProfile -Command &quot;&amp; { exit [int]($PSVersionTable.PSVersion.Major -lt 3) }&quot;" IgnoreExitCode="true" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'">
+			<Output TaskParameter="ExitCode" PropertyName="LastExitCode" />
+		</Exec>
+		<Error Condition="'$(LastExitCode)' != '0'" Text="Powershell v3 or greater is required on Windows." />
+
+		<!-- Should fail on *nix if curl isn't found. -->
+		<Exec Command="command -v curl" Condition="'$(OS)' != 'Windows_NT'" StandardOutputImportance="low" />
+
+		<Error Condition="'$(UpdateUrl)' == ''" Text="Property UpdateUrl is required." />
+	</Target>
+
+	<PropertyGroup>
+		<UpdaterImported>true</UpdaterImported>
+	</PropertyGroup>
+</Project>
