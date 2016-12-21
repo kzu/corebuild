@@ -13,8 +13,12 @@
 	<Target Name="_SplitProjectReferencesByFileExistence" />
 	
 	<ItemGroup>
-		<PackageReference Include="CoreBuild.Updater" Version="*" />
-		<PackageReference Include="MSBuilder.XmlPoke" Version="*" />
+		<PackageReference Include="CoreBuild.Updater" Version="*">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MSBuilder.XmlPoke" Version="*">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<PropertyGroup>
