@@ -13,7 +13,7 @@ authoring a corebuild script.
 	
 	<PropertyGroup>
 		<UpdateBaseUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/</UpdateBaseUrl>
-		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
+		<PS Condition="'$(PS)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
 		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
 	</PropertyGroup>
 
