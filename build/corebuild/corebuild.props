@@ -3,6 +3,8 @@
 	<PropertyGroup>
 		<!-- Instruct NuGet to perform a NETCore-like restore -->
 		<TargetFramework>netcore50</TargetFramework>
+		<!-- Instruct NuGet that we use PackageReference, rather than project.json -->
+		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
 		<!-- Specify a well-known usually ignored directory for the generated targets -->
 		<RestoreOutputPath>$(MSBuildThisFileDirectory).nuget</RestoreOutputPath>
 		<ETag />
