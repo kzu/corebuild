@@ -12,14 +12,15 @@ authoring a corebuild script.
 <Project DefaultTargets="Update" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
 	<PropertyGroup>
-		<UpdateBaseUrl>https://raw.githubusercontent.com/kzu/corebuild/master/build/</UpdateBaseUrl>
+		<UpdateBaseUrl>https://raw.githubusercontent.com/kzu/corebuild/master/src/</UpdateBaseUrl>
 		<PS Condition="'$(PS)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
 		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Updatable Include="corebuild.cmd" />
 		<Updatable Include="corebuild.proj" />
-		<Updatable Include="project.json" />
+		<Updatable Include="msbuild.rsp" />
 		<Updatable Include="corebuild/corebuild.props" />
 		<Updatable Include="corebuild/corebuild.targets" />
 		<Updatable Include="corebuild/update.targets" />

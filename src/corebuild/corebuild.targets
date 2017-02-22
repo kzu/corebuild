@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<!-- Import NuGet.targets for Restore -->
 	<PropertyGroup>
-		<NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'==''">$(MSBuildExtensionsPath)\..\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
+		<NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'==''">$(VsInstallRoot)\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
 	</PropertyGroup>
 	<Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" />
 	<Import Condition="'$(CoreBuildPropsImported)' == ''" Project="corebuild.props" />
@@ -11,6 +11,10 @@
 
 	<!-- Unfortunately, NuGet restore depends on this target for its _GenerateRestoreProjectReferencePaths target -->
 	<Target Name="_SplitProjectReferencesByFileExistence" />
+	
+	<Target Name="GetVsInstallRoot" Returns="$(VsInstallRoot)">
+		<Message Importance="high" Text="$(VsInstallRoot)" />
+	</Target>
 	
 	<ItemGroup>
 		<PackageReference Include="CoreBuild.Updater" Version="*">
