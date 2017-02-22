@@ -7,6 +7,7 @@ set NodeReuse=true
 set MultiProcessor=/m
 set BuildConfiguration=
 set MSBuildTarget=
+set MSBuildAdditionalArguments=
 
 :ParseArguments
 if "%1" == "" goto :DoneParsing
@@ -18,7 +19,7 @@ if /I "%1" == "/restore" set MSBuildTarget=/t:Restore&&shift&& goto :ParseArgume
 if /I "%1" == "/update" set MSBuildTarget=/t:Update&&shift&& goto :ParseArguments
 if /I "%1" == "/no-node-reuse" set NodeReuse=false&&shift&& goto :ParseArguments
 if /I "%1" == "/no-multi-proc" set MultiProcessor=&&shift&& goto :ParseArguments
-MSBuildAdditionalArguments="%1 %MSBuildAdditionalArguments"%&&shift&& goto :ParseArguments
+set MSBuildAdditionalArguments=%1 %MSBuildAdditionalArguments%&&shift&& goto :ParseArguments
 :DoneParsing
 
 :: Detect if MSBuild is in the path
@@ -72,7 +73,9 @@ if "%VisualStudioVersion%" == "" (
   call "%DeveloperCommandPrompt%" || goto :BuildFailed
 )
 
-msbuild /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:Configuration="%BuildConfiguration%" "%Root%corebuild.proj" %MSBuildAdditionalArguments%
+@echo on
+msbuild "%Root%corebuild.proj" /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:Configuration="%BuildConfiguration%" %MSBuildAdditionalArguments%
+@echo off
 if ERRORLEVEL 1 (
     echo.
     call :PrintColor Red "Build failed, for full log see msbuild.log."
