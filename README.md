@@ -23,25 +23,37 @@ Updating to latest `corebuild` imports:
 
 		msbuild corebuild.proj /t:update
 
+or
 
-> NOTE: updating `corebuild` will never overwrite your custom `corebuild.proj`, only 
-> the dependent targets in the `corebuild` subfolder created when initially installed.
+		corebuild /update
+
+> NOTE: updating `corebuild` will never overwrite your custom `corebuild.proj` or 
+> `corebuild.cmd`, only the dependent targets in the `corebuild` subfolder created when initially installed.
 
 
 ## What
 
-`corebuild` provides a basic starting point for writing build scripts 
-using MSBuild taking advantage of the newest features of MSBuild 15+ 
-and NuGet packages for consuming reusable MSBuild props, targets and 
-tasks.
+`corebuild` provides a [basic starting point](https://github.com/kzu/corebuild/blob/master/src/corebuild.proj) 
+for writing build scripts using MSBuild taking advantage of the newest features of MSBuild 15+ 
+and NuGet packages for consuming reusable MSBuild props, targets and tasks. 
 
+It also provides a [default batch file](https://github.com/kzu/corebuild/blob/master/src/corebuild.cmd) 
+that can be used to easily ensure the basic requirements are met (MSBuild 15+ and Visual Studio 
+2017+ developer command prompt).
+
+Finally, it [provides a basic](https://github.com/kzu/corebuild/blob/master/src/msbuild.rsp) 
+MSBuild [response file](https://msdn.microsoft.com/en-us/library/ms404301.aspx) 
+that allows keeping the console output clean with minimal verbosity, while 
+redirecting the detailed output to an `msbuild.log` file alongside your 
+`corebuild.proj`. This behavior can be opted out by simply deleting the `msbuild.rsp` file 
+or using the `/noautoresponse` MSBuild switch (either with `corebuild.proj` or the `corebuild.cmd` 
+batch file);
 
 ## Why
 
-Writing MSBuild targets is getting considerably more convenient as MSBuild 
-is evolving in v15 and beyond. Together with the built-in support for NuGet 
-package restore from MSBuild, the combination is now much more powerfull 
-and allows for more concise and readable build scripts.
+Writing MSBuild targets is getting considerably more convenient as MSBuild is evolving in 
+v15.0 and beyond. Together with the built-in support for NuGet package restore from MSBuild, 
+the combination is now much more powerfull and allows for more concise and readable build scripts.
 
 Examples of the increased power allowed by this new combination:
 
@@ -77,20 +89,22 @@ There are many more such reusable build blocks at [MSBuilder](https://github.com
 
 ## How
 
-`corebuild` provides a [.props](https://github.com/kzu/corebuild/blob/master/build/corebuild/corebuild.props) and 
-a [.targets](https://github.com/kzu/corebuild/blob/master/build/corebuild/corebuild.targets) that configure the 
+`corebuild` provides a [.props](https://github.com/kzu/corebuild/blob/master/src/corebuild/corebuild.props) and 
+a [.targets](https://github.com/kzu/corebuild/blob/master/src/corebuild/corebuild.targets) that configure the 
 relevant NuGet imports to turn on package restore and consume the build targets and tasks provided by those 
 packages.
 
 In order to enable package restore from MSBuild, `corebuild` opts-in to the NuGet 4.0 features available 
-to .NET Core projects, by specifying `netcore50` as its [TargetFramework](https://github.com/kzu/corebuild/blob/master/build/corebuild/corebuild.props#L5).
+in VS2017 for "SDK Style" MSBuild projects, by specifying `netcore50` as its 
+[TargetFramework](https://github.com/kzu/corebuild/blob/master/src/corebuild/corebuild.props#L5).
 
-NuGet will automatically generate the restore artifacts in the `.nuget` folder inside `corebuild` alongside your 
+NuGet will automatically generate the restore artifacts in the `corebuild\.nuget` folder alongside your 
 `corebuild.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`):
 
 		\root
 			- corebuild.proj
-			- project.json
+			- corebuild.cmd
+			- msbuild.rsp
 			\corebuild
 				- corebuild.props     [self-updating via /t:Update]
 				- corebuild.targets   [self-updating via /t:Update]
@@ -99,9 +113,33 @@ NuGet will automatically generate the restore artifacts in the `.nuget` folder i
 					- [nuget restore artifacts here, updated by /t:Restore]
 
 The `corebuild.props` and `corebuild.targets` then import the generated targets from NuGet, allowing 
-your main `corebuild.proj` project to readily consume their artifacts.
+your main `corebuild.proj` project to readily consume their artifacts. 
+A typical [`corebuild.proj`](https://github.com/kzu/corebuild/blob/master/src/corebuild.proj) therefore 
+looks quite clean:
+
+```xml
+<Project DefaultTargets="Build">
+	<Import Project="corebuild\corebuild.props" />
+
+	<ItemGroup>
+		<!-- Some PackageReferences for reusable MSBuild "scriptlets"... -->
+	</ItemGroup>
+
+	<Target Name="Build">
+		...
+	</Target>
+
+	<Target Name="Clean">
+		...
+	</Target>
+
+	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+
+	<Import Project="corebuild\corebuild.targets" />
+</Project>
+```
 
 `corebuild` also provides its own self-updating mechanism via the [CoreBuild.Updater](https://www.nuget.org/packages/CoreBuild.Updater) 
 nuget package, which intelligently updates the main `.props` and `.targets` by checking the persisted local 
-`ETag` property against the GitHub-provided one for the raw file in the main repository.
-
+[ETag](https://github.com/kzu/corebuild/blob/master/src/corebuild/corebuild.props#L10) property against the 
+GitHub-provided one for the raw file in the main repository.
