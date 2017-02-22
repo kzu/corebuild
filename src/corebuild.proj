@@ -15,9 +15,13 @@
 	</ItemGroup>
 
 	<Target Name="Build">
-		<!-- Once the Restore is done we use a custom task from the NuGet package -->
+		<!-- Once the Restore is done we can use a custom task from the NuGet package -->
 		<DumpItems Items="@(PackageReference)" ItemName="PackageReference" />
 	</Target>
+
+	<Target Name="Clean" />
+
+	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
 	<Import Project="corebuild\corebuild.targets" />
 </Project>
