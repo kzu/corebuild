@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<PS Condition="'$(PowerShell)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
+		<PS Condition="'$(PS)' == ''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PS>
 		<Curl Condition="'$(Curl)' == ''">curl -k -f -L</Curl>
 		<UpdateTarget Condition="'$(UpdateTarget)' == ''">$(MSBuildProjectFullPath)</UpdateTarget>
 
@@ -27,7 +27,7 @@
 
 	<Target Name="_FetchRemoteETag" DependsOnTargets="_FetchRemoteETagPS;_FetchRemoteETagCurl" />
 
-	<Target Name="_FetchRemoteETagPS">
+	<Target Name="_FetchRemoteETagPS" Condition="'$(OS)' == 'Windows_NT'">
 		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD).Headers.ETag }&quot;" 
 			  StandardOutputImportance="low" 
 			  EchoOff="true" 
