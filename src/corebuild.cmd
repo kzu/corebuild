@@ -76,7 +76,7 @@ if "%VisualStudioVersion%" == "" (
 if not "%MSBuildTarget%" == "" set MSBuildTargetName=%MSBuildTarget:~3%
 
 @echo on
-msbuild "%Root%corebuild.proj" /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:target=%MSBuildTargetName% /p:Configuration="%BuildConfiguration%" %MSBuildAdditionalArguments%
+msbuild "%Root%corebuild.proj" /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:target=%MSBuildTargetName% /p:Configuration=%BuildConfiguration% %MSBuildAdditionalArguments%
 @echo off
 if ERRORLEVEL 1 (
     echo.
