@@ -5,8 +5,13 @@
 	To update to the latest version of the corebuild targets imported 
 	by this project, just run the `Update` target.
 -->
-<Project DefaultTargets="Build">
+<Project DefaultTargets="Build" TreatAsLocalProperty="Configuration">
 	<Import Project="corebuild\corebuild.props" />
+
+	<PropertyGroup>
+		<!-- Allows corebuild.cmd to pass empty config and control default from here -->
+		<Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- MSBuild /t:Restore will restore this package like in .NETCore -->
