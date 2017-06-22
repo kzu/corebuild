@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+set MSBUILDLOGASYNC=1
+
 set BatchFile=%0
 set Root=%~dp0
 set NodeReuse=true
@@ -14,12 +16,15 @@ if "%1" == "" goto :DoneParsing
 if /I "%1" == "/?" call :Usage && exit /b 1
 if /I "%1" == "/debug" set BuildConfiguration=Debug&&shift&& goto :ParseArguments
 if /I "%1" == "/release" set BuildConfiguration=Release&&shift&& goto :ParseArguments
+if /I "%1" == "/build" set MSBuildTarget=/t:Build&&shift&& goto :ParseArguments
+if /I "%1" == "/clean" set MSBuildTarget=/t:Clean&&shift&& goto :ParseArguments
 if /I "%1" == "/rebuild" set MSBuildTarget=/t:Rebuild&&shift&& goto :ParseArguments
 if /I "%1" == "/restore" set MSBuildTarget=/t:Restore&&shift&& goto :ParseArguments
 if /I "%1" == "/update" set MSBuildTarget=/t:Update&&shift&& goto :ParseArguments
+if /I "%1" == "/test" set MSBuildTarget=/t:Test&&shift&& goto :ParseArguments
 if /I "%1" == "/no-node-reuse" set NodeReuse=false&&shift&& goto :ParseArguments
 if /I "%1" == "/no-multi-proc" set MultiProcessor=&&shift&& goto :ParseArguments
-set MSBuildAdditionalArguments=%1 %MSBuildAdditionalArguments%&&shift&& goto :ParseArguments
+set MSBuildAdditionalArguments=%MSBuildAdditionalArguments% %1&&shift&& goto :ParseArguments
 :DoneParsing
 
 :: Detect if MSBuild is in the path
@@ -76,7 +81,7 @@ if "%VisualStudioVersion%" == "" (
 if not "%MSBuildTarget%" == "" set MSBuildTargetName=%MSBuildTarget:~3%
 
 @echo on
-msbuild "%Root%corebuild.proj" /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:target=%MSBuildTargetName% /p:Configuration=%BuildConfiguration% %MSBuildAdditionalArguments%
+msbuild "%Root%build.proj" /nologo /nr:%NodeReuse% %MultiProcessor% %MSBuildTarget% /p:target=%MSBuildTargetName% /p:Configuration=%BuildConfiguration% %MSBuildAdditionalArguments%
 @echo off
 if ERRORLEVEL 1 (
     echo.
@@ -89,12 +94,15 @@ call :PrintColor Green "Build completed successfully, for full log see msbuild.l
 exit /b 0
 
 :Usage
-echo Usage: %BatchFile% [/rebuild^|/restore^|/update^] [/debug^|/release] [/no-node-reuse] [/no-multi-proc]
+echo Usage: %BatchFile% [/build^|/clean^|/rebuild^|/restore^|/update^|/test^] [/debug^|/release] [/no-node-reuse] [/no-multi-proc] [OPTIONS]
 echo.
 echo   Build targets:
-echo     /rebuild                 Perform a clean, then build
+echo     /build                   Builds the project
+echo     /clean                   Cleans a previous build
+echo     /rebuild                 Cleans, then builds
 echo     /restore                 Only restore NuGet packages
-echo     /update                  Updates corebuild dependencies
+echo     /update                  Updates corebuild targets and dependencies
+echo     /test                    Runs tests
 echo.
 echo   Build options:
 echo     /debug                   Perform debug build (/p:Configuration=Debug)
@@ -102,6 +110,9 @@ echo     /release                 Perform release build (/p:Configuration=Releas
 echo     /no-node-reuse           Prevents MSBuild from reusing existing MSBuild instances,
 echo                              useful for avoiding unexpected behavior on build machines ('/nr:false' switch)
 echo     /no-multi-proc           No multi-proc build, useful for diagnosing build logs (no '/m' switch)
+echo     /noautoresponse          Do not process the msbuild.rsp response file options
+echo
+echo     [OPTIONS]                Arbitrary MSBuild switches can also be passed in.
 goto :eof
 
 :BuildFailed

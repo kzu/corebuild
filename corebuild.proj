@@ -18,16 +18,16 @@ authoring a corebuild script.
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Updatable Include="corebuild.cmd" />
-		<Updatable Include="corebuild.proj" />
+		<Updatable Include="build.cmd" />
+		<Updatable Include="build.proj" />
 		<Updatable Include="msbuild.rsp" />
-		<Updatable Include="corebuild/corebuild.props" />
-		<Updatable Include="corebuild/corebuild.targets" />
-		<Updatable Include="corebuild/update.targets" />
+		<Updatable Include="build/corebuild.props" />
+		<Updatable Include="build/corebuild.targets" />
+		<Updatable Include="build/update.targets" />
 	</ItemGroup>
 
 	<Target Name="Update">
-		<MakeDir Directories="$(MSBuildThisFileDirectory)corebuild" Condition="!Exists('$(MSBuildThisFileDirectory)corebuild')"	 />
+		<MakeDir Directories="$(MSBuildThisFileDirectory)build" Condition="!Exists('$(MSBuildThisFileDirectory)build')"	 />
 		<Exec Command='$(Curl) -o "$(MSBuildThisFileDirectory)%(Updatable.Identity)" "$(UpdateBaseUrl)%(Updatable.Identity)"'
 			  Condition="'$(OS)' != 'Windows_NT'"/>
 

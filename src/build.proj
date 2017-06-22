@@ -6,7 +6,7 @@
 	by this project, just run the `Update` target.
 -->
 <Project DefaultTargets="Build" TreatAsLocalProperty="Configuration">
-	<Import Project="corebuild\corebuild.props" />
+	<Import Project="build\corebuild.props" />
 
 	<PropertyGroup>
 		<!-- Allows corebuild.cmd to pass empty config and control default from here -->
@@ -14,8 +14,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- MSBuild /t:Restore will restore this package like in .NETCore -->
+		<!-- MSBuild /t:Restore will restore these packages -->
 		<PackageReference Include="MSBuilder.DumpItems" Version="0.2.1" />
+		<PackageReference Include="xunit.runner.msbuild" Version="2.2.0" />
 	</ItemGroup>
 
 	<Target Name="Build">
@@ -27,5 +28,9 @@
 
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
-	<Import Project="corebuild\corebuild.targets" />
+	<Target Name="Test">
+		<xunit Assemblies="@(TestAssembly)" />
+	</Target>
+
+	<Import Project="build\corebuild.targets" />
 </Project>
