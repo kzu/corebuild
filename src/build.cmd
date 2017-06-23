@@ -1,7 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Perf/usability tweaks for MSBuild
 set MSBUILDLOGASYNC=1
+set MSBUILDLOGTASKINPUTS=1
+set MSBUILDDISABLENODEREUSE=1
 
 set BatchFile=%0
 set Root=%~dp0
