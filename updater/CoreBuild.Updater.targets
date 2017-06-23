@@ -28,7 +28,7 @@
 	<Target Name="_FetchRemoteETag" DependsOnTargets="_FetchRemoteETagPS;_FetchRemoteETagCurl" />
 
 	<Target Name="_FetchRemoteETagPS" Condition="'$(OS)' == 'Windows_NT'">
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD).Headers.ETag }&quot;" 
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { (Invoke-WebRequest -Uri $(UpdateUrl) -Method HEAD -UseBasicParsing).Headers.ETag }&quot;" 
 			  StandardOutputImportance="low" 
 			  EchoOff="true" 
 			  ConsoleToMSBuild="true">
@@ -61,7 +61,7 @@
 		<Exec Command="$(Curl) -o &quot;$(UpdateTarget)&quot; &quot;$(UpdateUrl)&quot;" 
 			  Condition="'$(OS)' != 'Windows_NT'" />
 
-		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateUrl) -OutFile &quot;$(UpdateTarget)&quot; }&quot;" 
+		<Exec Command="&quot;$(PS)&quot; -NoProfile -Command &quot;&amp; { Invoke-WebRequest -Uri $(UpdateUrl) -OutFile &quot;$(UpdateTarget)&quot; -UseBasicParsing }&quot;" 
 			  EchoOff="true" 
 			  Condition="'$(OS)' == 'Windows_NT'" />
 

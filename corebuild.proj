@@ -31,7 +31,7 @@ authoring a corebuild script.
 		<Exec Command='$(Curl) -o "$(MSBuildThisFileDirectory)%(Updatable.Identity)" "$(UpdateBaseUrl)%(Updatable.Identity)"'
 			  Condition="'$(OS)' != 'Windows_NT'"/>
 
-		<Exec Command='"$(PS)" -NoProfile -Command "&amp; { Invoke-WebRequest -Uri $(UpdateBaseUrl)%(Updatable.Identity) -OutFile &quot;$(MSBuildThisFileDirectory)%(Updatable.Identity)&quot; }"'
+		<Exec Command='"$(PS)" -NoProfile -Command "&amp; { Invoke-WebRequest -Uri $(UpdateBaseUrl)%(Updatable.Identity) -OutFile &quot;$(MSBuildThisFileDirectory)%(Updatable.Identity)&quot; -UseBasicParsing }"'
 			  EchoOff="true"
 			  Condition="'$(OS)' == 'Windows_NT'" />
 		
