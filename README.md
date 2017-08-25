@@ -116,10 +116,10 @@ NuGet will automatically generate the restore artifacts in the `corebuild\.nuget
 `corebuild.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`):
 
 		\root
-			- corebuild.proj
-			- corebuild.cmd
+			- build.proj
+			- build.cmd
 			- msbuild.rsp
-			\corebuild
+			\build
 				- corebuild.props     [self-updating via /t:Update]
 				- corebuild.targets   [self-updating via /t:Update]
 				- update.targets      [self-updating via /t:Update]
@@ -127,8 +127,8 @@ NuGet will automatically generate the restore artifacts in the `corebuild\.nuget
 					- [nuget restore artifacts here, updated by /t:Restore]
 
 The `corebuild.props` and `corebuild.targets` then import the generated targets from NuGet, allowing 
-your main `corebuild.proj` project to readily consume their artifacts. 
-A typical [`corebuild.proj`](https://github.com/kzu/corebuild/blob/master/src/corebuild.proj) therefore 
+your main `build.proj` project to readily consume their artifacts. 
+A typical [`corebuild.proj`](https://github.com/kzu/corebuild/blob/master/src/build.proj) therefore 
 looks quite clean:
 
 ```xml
@@ -155,5 +155,5 @@ looks quite clean:
 
 `corebuild` also provides its own self-updating mechanism via the [CoreBuild.Updater](https://www.nuget.org/packages/CoreBuild.Updater) 
 nuget package, which intelligently updates the main `.props` and `.targets` by checking the persisted local 
-[ETag](https://github.com/kzu/corebuild/blob/master/src/corebuild/corebuild.props#L10) property against the 
+[ETag](https://github.com/kzu/corebuild/blob/master/src/build/corebuild.props#L13) property against the 
 GitHub-provided one for the raw file in the main repository.
