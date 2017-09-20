@@ -14,7 +14,7 @@ Using curl:
 	
 Using PowerShell:
 
-		%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command "& { Invoke-WebRequest -Uri https://bit.ly/corebuild -OutFile build.proj }" && msbuild build.proj /v:minimal
+		Invoke-WebRequest -Uri https://bit.ly/corebuild -OutFile build.proj; msbuild build.proj /v:minimal
 
 The initial "build" is used to initialize the build script by downloading the required dependent 
 targets and persisting the initial `ETag` used afterwards for checking for udpates.
