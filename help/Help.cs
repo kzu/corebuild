@@ -153,7 +153,8 @@ namespace CoreBuild.Help
 
             help.AppendLine();
             metaHelp.AppendLine();
-            Log.LogMessage(MessageImportance.High, help.ToString() + Environment.NewLine + metaHelp.ToString());
+            Log.LogMessage(MessageImportance.High, help.ToString());
+            Log.LogMessage(MessageImportance.Normal, metaHelp.ToString());
 
             return true;
         }

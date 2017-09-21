@@ -11,11 +11,11 @@ This is typically your repository root.
 
 From a PowerShell command prompt:
 
-		curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /v:minimal
+		curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
 
 From a regular command prompt using curl.exe:
 
-		curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /v:minimal
+		curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
 	
 The initial "build" is used to initialize the build script by downloading the required dependent 
 targets and persisting the initial `ETag` used afterwards for checking for udpates.
