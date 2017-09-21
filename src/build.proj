@@ -6,39 +6,39 @@
 	by this project, just run the `Update` target.
 -->
 <Project DefaultTargets="Build" TreatAsLocalProperty="Configuration" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="build\corebuild.props" />
+  <Import Project="build\corebuild.props" />
 
-	<!-- Properties and Targets documentation can be rendered by running the Help target provided by the CoreBuild.Help package -->
+  <!-- Properties and Targets documentation can be rendered by running the Help target provided by the CoreBuild.Help package -->
 
-	<PropertyGroup>
-		<!-- Configuration to use for Build. Defaults to Debug if empty. -->
-		<Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-	</PropertyGroup>
+  <PropertyGroup>
+    <!-- Configuration to use for Build. Defaults to Debug if empty. -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<!-- MSBuild /t:Restore will restore these packages -->
-		<PackageReference Include="MSBuilder.DumpItems" Version="0.2.1" />
-		<PackageReference Include="xunit.runner.msbuild" Version="2.2.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <!-- MSBuild /t:Restore will restore these packages -->
+    <PackageReference Include="MSBuilder.DumpItems" Version="0.2.1" />
+    <PackageReference Include="xunit.runner.msbuild" Version="2.2.0" />
+  </ItemGroup>
 
   <!-- Configures the project in preparation for Build. Includes running Restore. -->
   <Target Name="Configure" DependsOnTargets="Restore" />
 
-	<!-- Targets can be documented, and /t:Help will render the help -->
-	<Target Name="Build">
-		<!-- Once the Restore is done we can use a custom task from the NuGet package -->
-		<DumpItems Items="@(PackageReference)" ItemName="PackageReference" />
-	</Target>
+  <!-- Targets can be documented, and /t:Help will render the help -->
+  <Target Name="Build">
+    <!-- Once the Restore is done we can use a custom task from the NuGet package -->
+    <DumpItems Items="@(PackageReference)" ItemName="PackageReference" />
+  </Target>
 
-	<Target Name="Clean" />
+  <Target Name="Clean" />
 
-	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
-	<Target Name="Test">
-		<xunit Assemblies="@(TestAssembly)" />
-	</Target>
+  <Target Name="Test">
+    <xunit Assemblies="@(TestAssembly)" />
+  </Target>
 
-	<Target Name="Run" />
+  <Target Name="Run" />
 
-	<Import Project="build\corebuild.targets" />
+  <Import Project="build\corebuild.targets" />
 </Project>
