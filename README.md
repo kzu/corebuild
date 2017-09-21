@@ -36,19 +36,15 @@ or
 
 `corebuild` provides a [basic starting point](https://github.com/kzu/corebuild/blob/master/src/build.proj) 
 for writing build scripts using MSBuild taking advantage of the newest features of MSBuild 15+ 
-and NuGet packages for consuming reusable MSBuild props, targets and tasks. 
+and NuGet packages for consuming reusable MSBuild props, targets and tasks which is also 
+[CoreBuild Standard](http://www.corebuild.io) compliant.
 
 It also provides a [default batch file](https://github.com/kzu/corebuild/blob/master/src/build.cmd) 
 that can be used to easily ensure the basic requirements are met (MSBuild 15+ and Visual Studio 
 2017+ developer command prompt).
 
-Finally, it [provides a basic](https://github.com/kzu/corebuild/blob/master/src/msbuild.rsp) 
-MSBuild [response file](https://msdn.microsoft.com/en-us/library/ms404301.aspx) 
-that allows keeping the console output clean with minimal verbosity, while 
-redirecting the detailed output to an `msbuild.log` file alongside your 
-`build.proj`. This behavior can be opted out by simply deleting the `msbuild.rsp` file 
-or using the `/noautoresponse` MSBuild switch (either with `build.proj` or the `build.cmd` 
-batch file).
+Finally, it provides automatic targets and properties help via the the 
+[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) package.
 
 ## Why
 

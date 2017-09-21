@@ -34,7 +34,7 @@ Note that the actual implementation of these targets is completely left to each 
 since the meaning of each will vary wildly depending on the project type.
 
 If your project is CoreBuild Standard compatible, just add the following badge on its 
-main page: 
+main page or README: 
 
 [![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 
@@ -132,9 +132,11 @@ Help:
 ```
 
 Note that the documentation can be wrapped in sequences of `=` or `*` which a very common 
-practice in MSBuild targets. 
+practice in MSBuild targets. You can also further tweak what Help reports by setting the various Help* properties.
 
-Note also that you can use further tweak what Help reports.
+`Help` checks for **CoreBuild Standard** compliance when run, as shown above. Non-compliance will
+generate a build warning with the code `CB01` which can be disabled with the `/nowarn:CB01` MSBuild 
+switch.
 
 ## Boostrapping
 
