@@ -44,28 +44,10 @@ Markdown:
 [![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 ```
 
-## Boostrapping
+# Extras
 
-Creating MSBuild build scripts that can easily consume NuGet packages isn't exactly straightforward, 
-so CoreBuild also provides help in that front. Simply run the following from a PowerShell command prompt:
-
-```
-	curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /v:minimal
-```
-
-or using curl.exe from a regular command prompt:
-
-```
-	curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /v:minimal
-```
-
-Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
-`PackageReference`s to and run `/t:Restore` and `/t:Help` (see next section on Help).
-
-> NOTE: make sure you commit the `build` directory entirely. 
-
-Learn more about the boostrapping in the [CoreBuild](https://github.com/kzu/corebuild) repository.
-
+In order to make CoreBuild projects authoring easier and foster adoption, we also provide 
+the following tools to help you quickly get started with CoreBuild-compatible projects.
 
 ## Help
 
@@ -139,17 +121,43 @@ Help:
         - Run: Installs the main VSIX into VS Experimental and runs it
         - Test: Runs unit tests
 
-  Help: properties to customize what `Help` reports
-        - HelpExclude: A wildcard pattern to evaluate against properties or targets for exclusion on Help target runs
-        - HelpInclude: A wildcard pattern to evaluate against properties or targets for inclusion on Help target runs
-        - HelpProperties: Get help on public properties
-        - HelpTargets: Get help on public targets
+  Help: properties to customize what 'Help' reports
+        - HelpExclude: Regex to evaluate against property and target names for exclusion in help. Defaults to '$^'
+        - HelpImports: Whether to get help for imported files. Defaults to 'false'
+        - HelpInclude: Regex to evaluate against property and target names for inclusion in help. Defaults to '.*'
+        - HelpProject: Project to render help for. Defaults to the current project file.
+        - HelpProperties: Whether to get help on public properties. Defaults to 'true'
+        - HelpSearch: Regex used to do a full text search across properties, targets and their documentation
+        - HelpTargets: Whether to get help on public targets. Defaults to 'true'
 ```
 
 Note that the documentation can be wrapped in sequences of `=` or `*` which a very common 
-practice in MSBuild targets.
+practice in MSBuild targets. 
 
 Note also that you can use further tweak what Help reports.
+
+## Boostrapping
+
+Creating MSBuild build scripts that can easily consume NuGet packages isn't exactly straightforward, 
+so CoreBuild also provides help in that front too. Simply run the following from a PowerShell command prompt:
+
+```
+	curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
+```
+
+or using curl.exe from a regular command prompt:
+
+```
+	curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
+```
+
+Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
+`PackageReference`s to and run `/t:Restore` and `/t:Help` (see next section on Help).
+
+> NOTE: make sure you commit the `build` directory entirely. 
+
+Learn more about the boostrapping in the [CoreBuild](https://github.com/kzu/corebuild) repository.
+
 
 # Credits
 
