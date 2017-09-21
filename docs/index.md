@@ -60,13 +60,14 @@ in an MSBuild project or script. The basic heuristics are simple:
 * Any property or target that doesn't start with an underscore is considered public
 * Any XML comment right before the target or property is considered its documentation.
 
-Here is an examples of the output of running `msbuild /t:help` on MSBuild projects with 
+Here is an examples of the output of running `msbuild /t:help` on an MSBuild project with 
 the package installed:
 
 Source:
 
 ```xml
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    ...
     <PropertyGroup>
         <!-- Configuration to use for Build. Defaults to 'Debug' if empty. -->
         <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
@@ -99,6 +100,7 @@ Source:
     <Target Name="Publish">...</Target>
 
     <Target Name="_SignOutput" AfterTargets="Build" Condition="'$(_CI)' == 'true'">...</Target>
+    ...
 </Project>
 ```
 
