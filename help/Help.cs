@@ -31,7 +31,11 @@ namespace CoreBuild.Help
         [Required]
         public string HelpInclude { get; set; } = ".*";
 
+        [Required]
         public string HelpExclude { get; set; } = "$^";
+
+        [Required]
+        public string HelpSearch { get; set; } = "";
 
         public override bool Execute()
         {
@@ -45,7 +49,15 @@ namespace CoreBuild.Help
 
             var includeExpr = new Regex(HelpInclude, RegexOptions.IgnoreCase);
             var excludeExpr = new Regex(HelpExclude, RegexOptions.IgnoreCase);
-            
+            var searchExpr = new Regex(HelpSearch, RegexOptions.IgnoreCase);
+
+            // Should exclude it if it doesn't match the include or matches the exclude
+            Predicate<string> shouldExclude = value 
+                => (!includeExpr.IsMatch(value) || excludeExpr.IsMatch(value));
+
+            Predicate<string> satisfiesSearch = value 
+                => string.IsNullOrWhiteSpace(HelpSearch) || searchExpr.IsMatch(value);
+
             var helpProperties = bool.Parse(HelpProperties);
             var helpTargets = bool.Parse(HelpTargets);
             var helpImports = bool.Parse(HelpImports);
@@ -80,35 +92,37 @@ namespace CoreBuild.Help
                     .OrderBy(x => x.Name))
                 {
                     var isMeta = Path.GetFileName(prop.Xml.Location.File) == "CoreBuild.Help.targets";
+                    var isLocal = declaredProps.Contains(prop.Name);
                     var builder = isMeta ? metaHelp : propsHelp;
 
-                    // Skip non-meta props that don't match the include or match the exclude patterns
-                    if (!isMeta && (!includeExpr.IsMatch(prop.Name) || excludeExpr.IsMatch(prop.Name)))
+                    // Skip non-meta props that should be excluded
+                    if (!isMeta && shouldExclude(prop.Name))
                         continue;
 
                     // Skip non-meta props that are from imports as needed
-                    if (!isMeta && !helpImports && !declaredProps.Contains(prop.Name))
+                    if (!isMeta && !helpImports && !isLocal)
                         continue;
 
-                    // We got a prop. Flag if non-meta
-                    if (!isMeta)
-                        hasProps = true;
-
-                    builder.AppendLine().Append($"\t- {prop.Name}");
-
-                    var isLocal = declaredProps.Contains(prop.Name);
                     var doc = docs.GetOrAdd(
                         isLocal ? HelpProject : prop.Xml.Location.File,
                         file => XDocument.Load(file, LoadOptions.SetLineInfo));
-
-                    var element = isLocal 
+                    var element = isLocal
                         ? FindElement(doc, prop.Name, root.Properties.First(x => x.Name == prop.Name).Location)
                         : FindElement(doc, prop.Name, prop.Xml.Location);
 
+                    var comment = "";
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                        comment = ((XComment)element.PreviousNode).Value;
+
+                    if (isMeta || satisfiesSearch(prop.Name) || satisfiesSearch(comment))
                     {
-                        var comment = (XComment)element.PreviousNode;
-                        AppendComment(builder, prop.Name, comment.Value);
+                        // We got a prop. Flag if non-meta
+                        if (!isMeta)
+                            hasProps = true;
+
+                        builder.AppendLine().Append($"\t- {prop.Name}");
+                        if (!string.IsNullOrWhiteSpace(comment))
+                            AppendComment(builder, prop.Name, comment);
                     }
                 }
 
@@ -126,15 +140,11 @@ namespace CoreBuild.Help
                 targetsHelp.Append("Targets:");
                 foreach (var target in eval.Targets
                     .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
-                    .Where(x => includeExpr.IsMatch(x.Key) && !excludeExpr.IsMatch(x.Key))
+                    .Where(x => !shouldExclude(x.Key))
                     // Skip targets that are from imports as needed
                     .Where(x => helpImports ? true : declaredTargets.Contains(x.Key))
                     .OrderBy(x => x.Key))
                 {
-
-                    hasTargets = true;
-                    targetsHelp.AppendLine().Append($"\t- {target.Key}");
-
                     var isLocal = declaredTargets.Contains(target.Key);
                     var doc = docs.GetOrAdd(
                         declaredTargets.Contains(target.Key) ? HelpProject : target.Value.Location.File, 
@@ -143,11 +153,16 @@ namespace CoreBuild.Help
                     var element = isLocal
                         ? FindElement(doc, "Target", root.Targets.First(x => x.Name == target.Key).Location)
                         : FindElement(doc, "Target", target.Value.Location);
-
+                    var comment = "";
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                        comment = ((XComment)element.PreviousNode).Value;
+
+                    if (satisfiesSearch(target.Key) || satisfiesSearch(comment))
                     {
-                        var comment = (XComment)element.PreviousNode;
-                        AppendComment(targetsHelp, target.Key, comment.Value);
+                        hasTargets = true;
+                        targetsHelp.AppendLine().Append($"\t- {target.Key}");
+                        if (!string.IsNullOrWhiteSpace(comment))
+                            AppendComment(targetsHelp, target.Key, comment);
                     }
                 }
 

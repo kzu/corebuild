@@ -167,6 +167,22 @@ namespace CoreBuild.Help
             Assert.True(task.Execute());
             Assert.False(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WTargets:")));
         }
+
+
+        [Fact]
+        public void HelpSearchFiltersOut()
+        {
+            var task = new Help
+            {
+                BuildEngine = engine,
+                HelpProject = Path.GetFullPath("Test.proj"),
+                HelpImports = "true",
+                HelpSearch = @"ProjectReferenceWithConfiguration"
+            };
+
+            Assert.True(task.Execute());
+            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WAssignProjectConfiguration:")));
+        }
     }
 
     #region MockBuildEngine

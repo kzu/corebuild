@@ -10,10 +10,12 @@
     <HelpProperties Condition="'$(HelpProperties)' == ''">true</HelpProperties>
     <!-- Whether to get help on public targets. Defaults to 'true' -->
     <HelpTargets Condition="'$(HelpTargets)' == ''">true</HelpTargets>
-    <!-- Regex to evaluate against properties or targets for inclusion in help. Defaults to '.*' -->
+    <!-- Regex to evaluate against property and target names for inclusion in help. Defaults to '.*' -->
     <HelpInclude Condition="'$(HelpInclude)' == ''">.*</HelpInclude>
-    <!-- Regex to evaluate against properties or targets for exclusion in help. Defaults to '$^' -->
+    <!-- Regex to evaluate against property and target names for exclusion in help. Defaults to '$^' -->
     <HelpExclude Condition="'$(HelpExclude)' == ''">$^</HelpExclude>
+    <!-- Regex used to do a full text search across properties, targets and their documentation -->
+    <HelpSearch Condition="'$(HelpFind)' == ''" />
   </PropertyGroup>
 
   <Target Name="Help">
