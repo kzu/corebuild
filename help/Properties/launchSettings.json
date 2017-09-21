@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CoreBuild.Help": {
+      "commandName": "Executable",
+      "executablePath": "$(VsInstallRoot)\\MSBuild\\$(VisualStudioVersion)\\Bin\\MSBuild.exe",
+      "commandLineArgs": "Test.proj /t:Help /bl",
+      "workingDirectory": "$(MSBuildProjectDirectory)\\$(OutputPath)"
+    }
+  }
+}

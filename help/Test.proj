@@ -1,0 +1,38 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="CoreBuild.Help.targets" />
+
+  <PropertyGroup>
+    <!-- Whether the build is a CI build -->
+    <CI Condition="'$(CI)' == ''">true</CI>
+    <_Deploy>false</_Deploy>
+
+    <!--
+    ============================================
+    PR property
+    ============================================
+    -->
+    <PR Condition="'$(PR)' == ''" />
+  </PropertyGroup>
+
+  <!-- 
+    Builds the project, duh.
+    Pretty much what you expect it to do :P
+  -->
+  <Target Name="Build" />
+
+  <!--
+    ***********************************************************************************************
+    ***********************************************************************************************
+                Configure
+    ***********************************************************************************************
+    ***********************************************************************************************
+    -->
+  <Target Name="Configure" />
+
+  <Target Name="Test" />
+
+  <Target Name="Run" />
+
+  <Target Name="_DoThis" />
+
+</Project>

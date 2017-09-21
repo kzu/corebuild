@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <PackageId>CoreBuild.Help</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Daniel Cazzulino</Authors>
+    <Company />
+    <Product />
+    <Copyright>Copyright 2017</Copyright>
+    <Title>CoreBuild: Help</Title>
+    <Description>Provides the Help target that dynamically lists available targets and properties in the current project.</Description>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>msbuild corebuild ci</PackageTags>
+    <PackageLicenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kzu/corebuild/</PackageProjectUrl>
+
+    <IsDevelopmentDependency>true</IsDevelopmentDependency>
+    <InferPackageContents>false</InferPackageContents>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Properties\launchSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Properties\launchSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Test.proj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="15.*" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="*" />
+    <PackageReference Include="GitInfo" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="build\$(AssemblyName).dll" />
+    <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="build\$(AssemblyName).pdb" />
+    <PackageFile Include="CoreBuild.Help.targets" TargetPath="build\CoreBuild.Help.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="CoreBuild.Help.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Remove="Test.cs" Condition="'$(Configuration)' == 'Release'" />
+  </ItemGroup>
+
+  <Target Name="SetAssemblyVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion">
+    <PropertyGroup>
+      <Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</Version>
+      <PackageVersion>$(Version)</PackageVersion>
+      <AssemblyVersion>$(Version)</AssemblyVersion>
+      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</FileVersion>
+      <InformationalVersion>$(AssemblyVersion)-$(GitBranch)+$(GitCommit)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+
+</Project>

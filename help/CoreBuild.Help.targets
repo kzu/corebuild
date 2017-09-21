@@ -1,0 +1,27 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Help" AssemblyFile="CoreBuild.Help.dll" />
+
+  <PropertyGroup>
+    <!-- Get help on public properties -->
+    <HelpProperties Condition="'$(HelpProperties)' == ''">true</HelpProperties>
+    <!-- Get help on public targets -->
+    <HelpTargets Condition="'$(HelpTargets)' == ''">true</HelpTargets>
+    <!-- A wildcard pattern to evaluate against properties or targets for inclusion on Help target runs -->
+    <HelpInclude Condition="'$(HelpInclude)' == ''">*</HelpInclude>
+    <!-- A wildcard pattern to evaluate against properties or targets for exclusion on Help target runs -->
+    <HelpExclude Condition="'$(HelpExclude)' == ''"></HelpExclude>
+  </PropertyGroup>
+
+  <Target Name="Help">
+    <Message Text=" __        __          
+/   _  _ _|__)   .| _| 
+\__(_)| (-|__)|_|||(_| 
+" />
+    <Help ProjectFile="$(MSBuildProjectFullPath)"
+          HelpProperties="$(HelpProperties)"
+          HelpTargets="$(HelpTargets)"
+          HelpInclude="$(HelpInclude)"
+          HelpExclude="$(HelpExclude)" />
+  </Target>
+
+</Project>
