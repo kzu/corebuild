@@ -29,7 +29,6 @@ namespace CoreBuild.Help
             {
                 BuildEngine = engine,
                 HelpProject = Path.GetFullPath("Test.proj"),
-                HelpExclude = "*figu*"
             };
 
             Assert.True(task.Execute());
@@ -47,7 +46,8 @@ namespace CoreBuild.Help
             };
 
             Assert.True(task.Execute());
-            Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("Restore")));
+            Assert.False(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WRestore:")));
+            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WBuild:")));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace CoreBuild.Help
             };
 
             Assert.True(task.Execute());
-            Assert.True(engine.LoggedMessageEvents.Any(e => e.Message.Contains("Restore")));
+            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\BeforeBuild:")));
         }
 
         [Fact]
@@ -132,12 +132,12 @@ namespace CoreBuild.Help
             {
                 BuildEngine = engine,
                 HelpProject = Path.GetFullPath("Test.proj"),
-                HelpInclude = "NuGet"
+                HelpInclude = "CI"
             };
 
             Assert.True(task.Execute());
             Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("PR:")));
-            Assert.True(engine.LoggedMessageEvents.Any(e => e.Message.Contains("NuGetRestoreTargets")));
+            Assert.True(engine.LoggedMessageEvents.Any(e => e.Message.Contains("CI:")));
         }
 
         [Fact]

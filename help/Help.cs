@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace CoreBuild.Help
         public string HelpProject { get; set; }
 
         [Required]
-        public string HelpImports { get; set; } = "False";
+        public string HelpImports { get; set; } = "false";
 
         [Required]
         public string HelpProperties { get; set; } = "true";
@@ -38,10 +39,13 @@ namespace CoreBuild.Help
             var root = ProjectRootElement.Open(HelpProject, collection);
             var docs = new ConcurrentDictionary<string, XDocument>();
             var eval = new Project(root, null, null, collection);
+            
+            var declaredProps = new HashSet<string>(root.Properties.Select(x => x.Name).Distinct((StringComparer.OrdinalIgnoreCase)));
+            var declaredTargets = new HashSet<string>(root.Targets.Select(x => x.Name).Distinct(), StringComparer.OrdinalIgnoreCase);
 
             var includeExpr = new Regex(HelpInclude, RegexOptions.IgnoreCase);
             var excludeExpr = new Regex(HelpExclude, RegexOptions.IgnoreCase);
-
+            
             var helpProperties = bool.Parse(HelpProperties);
             var helpTargets = bool.Parse(HelpTargets);
             var helpImports = bool.Parse(HelpImports);
@@ -83,7 +87,7 @@ namespace CoreBuild.Help
                         continue;
 
                     // Skip non-meta props that are from imports as needed
-                    if (!isMeta && !helpImports && !prop.Xml.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase))
+                    if (!isMeta && !helpImports && !declaredProps.Contains(prop.Name))
                         continue;
 
                     // We got a prop. Flag if non-meta
@@ -91,16 +95,15 @@ namespace CoreBuild.Help
                         hasProps = true;
 
                     builder.AppendLine().Append($"\t- {prop.Name}");
-                    var doc = docs.GetOrAdd(prop.Xml.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
-                    var element = (from x in doc.Root.Descendants()
-                                   where x.Name.LocalName == prop.Name
-                                   let info = (IXmlLineInfo)x
-                                   where info.HasLineInfo() &&
-                                     info.LineNumber == prop.Xml.Location.Line &&
-                                     // LinePosition starts at 1, 0 means no information
-                                     info.LinePosition == (prop.Xml.Location.Column + 1)
-                                   select x)
-                                  .First();
+
+                    var isLocal = declaredProps.Contains(prop.Name);
+                    var doc = docs.GetOrAdd(
+                        isLocal ? HelpProject : prop.Xml.Location.File,
+                        file => XDocument.Load(file, LoadOptions.SetLineInfo));
+
+                    var element = isLocal 
+                        ? FindElement(doc, prop.Name, root.Properties.First(x => x.Name == prop.Name).Location)
+                        : FindElement(doc, prop.Name, prop.Xml.Location);
 
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
                     {
@@ -124,21 +127,22 @@ namespace CoreBuild.Help
                 foreach (var target in eval.Targets
                     .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
                     .Where(x => includeExpr.IsMatch(x.Key) && !excludeExpr.IsMatch(x.Key))
+                    // Skip targets that are from imports as needed
+                    .Where(x => helpImports ? true : declaredTargets.Contains(x.Key))
                     .OrderBy(x => x.Key))
                 {
+
                     hasTargets = true;
                     targetsHelp.AppendLine().Append($"\t- {target.Key}");
 
-                    var doc = docs.GetOrAdd(target.Value.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
-                    var element = (from x in doc.Root.Descendants()
-                                   where x.Name.LocalName == "Target"
-                                   let info = (IXmlLineInfo)x
-                                   where info.HasLineInfo() &&
-                                     info.LineNumber == target.Value.Location.Line &&
-                                     // LinePosition starts at 1, 0 means no information
-                                     info.LinePosition == (target.Value.Location.Column + 1)
-                                   select x)
-                                  .First();
+                    var isLocal = declaredTargets.Contains(target.Key);
+                    var doc = docs.GetOrAdd(
+                        declaredTargets.Contains(target.Key) ? HelpProject : target.Value.Location.File, 
+                        file => XDocument.Load(file, LoadOptions.SetLineInfo));
+
+                    var element = isLocal
+                        ? FindElement(doc, "Target", root.Targets.First(x => x.Name == target.Key).Location)
+                        : FindElement(doc, "Target", target.Value.Location);
 
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
                     {
@@ -158,6 +162,17 @@ namespace CoreBuild.Help
 
             return true;
         }
+
+        XElement FindElement(XDocument doc, string elementName, ElementLocation location)
+            => (from x in doc.Root.Descendants()
+                where x.Name.LocalName == elementName
+                let info = (IXmlLineInfo)x
+                where info.HasLineInfo() &&
+                    info.LineNumber == location.Line &&
+                    // LinePosition starts at 1, 0 means no information
+                    info.LinePosition == (location.Column + 1)
+                select x)
+               .First();
 
         // Removes common wrapper characters in target and property comment blocks.
         static readonly Regex CommentBlockExpr = new Regex("[=|*]{3,}", RegexOptions.Compiled);
