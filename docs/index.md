@@ -10,9 +10,9 @@ Building and running repositories with managed code and MSBuild scripts is gener
 inconsistent because there isn't a common way that all .NET developers adopt, resulting 
 in the need to hope the repository provides a README with instructions.
 
-What if there could be a very visible badge that just told me that a repo is compliant 
-with some standard and that would mean I could configure, build and run it in a uniform
-way? That's the value that CoreBuild Standard provides.
+What if there could be a very visible badge that just told you that a repo is compliant 
+with some standard and that would mean you could configure, build test and run it in a 
+uniform way? That's the value that CoreBuild Standard provides.
 
 # What
 
@@ -44,12 +44,34 @@ Markdown:
 [![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 ```
 
+## Boostrapping
+
+Creating MSBuild build scripts that can easily consume NuGet packages isn't exactly straightforward, 
+so CoreBuild also provides help in that front. Simply run the following from a PowerShell command prompt:
+
+```
+	curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /v:minimal
+```
+
+or using curl.exe from a regular command prompt:
+
+```
+	curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /v:minimal
+```
+
+Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
+`PackageReference`s to and run `/t:Restore` and `/t:Help` (see next section on Help).
+
+> NOTE: make sure you commit the `build` directory entirely. 
+
+Learn more about the boostrapping in the [CoreBuild](https://github.com/kzu/corebuild) repository.
+
+
 ## Help
 
 Documenting MSBuild targets and properties is important and also generally non-standard. 
 To make documenting targets easier for consumers, we provide the 
-[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) NuGet package that whiich  
-renders documentation for public configurable properties and additional targets available 
+[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) NuGet package, which enders documentation for public configurable properties and additional targets available 
 in an MSBuild project or script. The basic heuristics are simple:
 
 * Any property or target that doesn't start with an underscore is considered public
@@ -128,14 +150,6 @@ Note that the documentation can be wrapped in sequences of `=` or `*` which a ve
 practice in MSBuild targets.
 
 Note also that you can use further tweak what Help reports.
-
-## Build Scripts
-
-Creating MSBuild build scripts that can easily consume NuGet packages isn't exactly straightforward, 
-so CoreBuild also provides help in that front. You can easily bootstrap a build script with the 
-instructions provided at https://github.com/kzu/corebuild.
-
-
 
 # Credits
 
