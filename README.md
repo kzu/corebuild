@@ -1,4 +1,5 @@
-# CoreBuild
+![Icon](https://raw.githubusercontent.com/kzu/corebuild/master/docs/corebuild-32.png) CoreBuild
+================
 
 Simplified MSBuild-based build scripts empowered by NuGet
 
@@ -8,14 +9,14 @@ Simplified MSBuild-based build scripts empowered by NuGet
 Create the folder where you will author the corebuild-based script. 
 This is typically your repository root.
 
-Using curl:
+From a PowerShell command prompt:
+
+		curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /v:minimal
+
+From a regular command prompt using curl.exe:
 
 		curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /v:minimal
 	
-Using PowerShell:
-
-		Invoke-WebRequest -Uri https://bit.ly/corebuild -OutFile build.proj; msbuild build.proj /v:minimal
-
 The initial "build" is used to initialize the build script by downloading the required dependent 
 targets and persisting the initial `ETag` used afterwards for checking for udpates.
 
