@@ -15,7 +15,7 @@
     <!-- Regex to evaluate against property and target names for exclusion in help. Defaults to '$^' -->
     <HelpExclude Condition="'$(HelpExclude)' == ''">$^</HelpExclude>
     <!-- Regex used to do a full text search across properties, targets and their documentation -->
-    <HelpSearch Condition="'$(HelpFind)' == ''" />
+    <HelpSearch Condition="'$(HelpSearch)' == ''"></HelpSearch>
   </PropertyGroup>
 
   <Target Name="Help">
@@ -28,7 +28,8 @@
           HelpProperties="$(HelpProperties)"
           HelpTargets="$(HelpTargets)"
           HelpInclude="$(HelpInclude)"
-          HelpExclude="$(HelpExclude)" />
+          HelpExclude="$(HelpExclude)"
+          HelpSearch="$(HelpSearch)"/>
   </Target>
 
 </Project>
