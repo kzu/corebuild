@@ -17,6 +17,9 @@
 	</Target>
 	
 	<ItemGroup>
+		<PackageReference Include="CoreBuild.Help" Version="*">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
 		<PackageReference Include="CoreBuild.Updater" Version="*">
 			<PrivateAssets>All</PrivateAssets>
 		</PackageReference>
