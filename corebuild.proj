@@ -20,7 +20,6 @@ authoring a corebuild script.
 	<ItemGroup>
 		<Updatable Include="build.cmd" />
 		<Updatable Include="build.proj" />
-		<Updatable Include="msbuild.rsp" />
 		<Updatable Include="build/corebuild.props" />
 		<Updatable Include="build/corebuild.targets" />
 		<Updatable Include="build/update.targets" />
