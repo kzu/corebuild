@@ -21,6 +21,9 @@
 		<PackageReference Include="xunit.runner.msbuild" Version="2.2.0" />
 	</ItemGroup>
 
+  <!-- Configures the project in preparation for Build. Includes running Restore. -->
+  <Target Name="Configure" DependsOnTargets="Restore" />
+
 	<!-- Targets can be documented, and /t:Help will render the help -->
 	<Target Name="Build">
 		<!-- Once the Restore is done we can use a custom task from the NuGet package -->
