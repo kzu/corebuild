@@ -53,7 +53,8 @@ the following tools to help you quickly get started with CoreBuild-compatible pr
 
 Documenting MSBuild targets and properties is important and also generally non-standard. 
 To make documenting targets easier for consumers, we provide the 
-[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) NuGet package, which enders documentation for public configurable properties and additional targets available 
+[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) NuGet package, which renders 
+documentation for public configurable properties and additional targets available 
 in an MSBuild project or script. The basic heuristics are simple:
 
 * Any property or target that doesn't start with an underscore is considered public
