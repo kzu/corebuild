@@ -39,7 +39,7 @@ namespace CoreBuild.Help
             var eval = new Project(root, null, null, collection);
 
             var metaHelp = new StringBuilder();
-            metaHelp.Append("Help: properties to customize what help reporting");
+            metaHelp.Append("Help: properties to customize what 'Help' reports");
 
             var help = new StringBuilder();
             var standard = eval.Targets.ContainsKey("Configure") &&

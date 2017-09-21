@@ -1,4 +1,4 @@
-![Icon](https://raw.github.com/kzu/IFluentInterface/master/images/icon-32.png) CoreBuild Standard
+![Icon](https://raw.githubusercontent.com/kzu/corebuild/master/docs/corebuild-32.png) CoreBuild Standard
 ================
 
 Defines the required targets that an MSBuild project or script must support in order 
