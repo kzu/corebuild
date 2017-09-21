@@ -34,7 +34,6 @@ namespace CoreBuild.Help
         [Required]
         public string HelpExclude { get; set; } = "$^";
 
-        [Required]
         public string HelpSearch { get; set; } = "";
 
         public override bool Execute()
