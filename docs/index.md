@@ -36,12 +36,12 @@ since the meaning of each will vary wildly depending on the project type.
 If your project is CoreBuild Standard compatible, just add the following badge on its 
 main page: 
 
-[![CoreBuild Standard](https://img.shields.io/badge/corebuild-standard-blue.svg)](http://www.corebuild.io)
+[![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 
 Markdown:
 
 ```
-[![CoreBuild Standard](https://img.shields.io/badge/corebuild-standard-blue.svg)](http://www.corebuild.io)
+[![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 ```
 
 ## Help
