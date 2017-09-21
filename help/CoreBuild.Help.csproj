@@ -36,7 +36,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="15.*" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" />
-    <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
     <PackageReference Include="NuGet.Build.Packaging" Version="*" />
     <PackageReference Include="GitInfo" Version="*" />
   </ItemGroup>

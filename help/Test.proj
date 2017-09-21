@@ -1,4 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'==''">$(VsInstallRoot)\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
+  </PropertyGroup>
+  <Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" />
   <Import Project="CoreBuild.Help.targets" />
 
   <PropertyGroup>

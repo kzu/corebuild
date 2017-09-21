@@ -10,15 +10,16 @@ using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace CoreBuild.Help
 {
     public class Help : Task
     {
         [Required]
-        public string ProjectFile { get; set; }
+        public string HelpProject { get; set; }
+
+        [Required]
+        public string HelpImports { get; set; } = "False";
 
         [Required]
         public string HelpProperties { get; set; } = "true";
@@ -27,16 +28,23 @@ namespace CoreBuild.Help
         public string HelpTargets { get; set; } = "true";
 
         [Required]
-        public string HelpInclude { get; set; } = "*";
+        public string HelpInclude { get; set; } = ".*";
 
-        public string HelpExclude { get; set; } = "";
+        public string HelpExclude { get; set; } = "$^";
 
         public override bool Execute()
         {
             var collection = new ProjectCollection();
-            var root = ProjectRootElement.Open(ProjectFile, collection);
+            var root = ProjectRootElement.Open(HelpProject, collection);
             var docs = new ConcurrentDictionary<string, XDocument>();
             var eval = new Project(root, null, null, collection);
+
+            var includeExpr = new Regex(HelpInclude, RegexOptions.IgnoreCase);
+            var excludeExpr = new Regex(HelpExclude, RegexOptions.IgnoreCase);
+
+            var helpProperties = bool.Parse(HelpProperties);
+            var helpTargets = bool.Parse(HelpTargets);
+            var helpImports = bool.Parse(HelpImports);
 
             var metaHelp = new StringBuilder();
             metaHelp.Append("Help: properties to customize what 'Help' reports");
@@ -57,66 +65,90 @@ namespace CoreBuild.Help
                 Log.LogWarning(null, "CB01", null, null, 0, 0, 0, 0, "This project is NOT CoreBuild Standard compatible. Please provide Configure, Build, Test and Run targets. Lean more at http://corebuild.io");
             }
 
-            help.Append("Properties:");
-            foreach (var prop in eval.Properties
-                .Where(x => x.Xml != null && !x.Name.StartsWith("_"))
-                .Where(x => Operators.LikeString(x.Name, HelpInclude, CompareMethod.Text))
-                .Where(x => !Operators.LikeString(x.Name, HelpExclude, CompareMethod.Text))
-                .OrderBy(x => x.Name))
+            var hasProps = false;
+            if (helpProperties)
             {
-                var isMeta = Path.GetFileName(prop.Xml.Location.File) == "CoreBuild.Help.targets";
-                var builder = isMeta ? metaHelp : help;
+                var propsHelp = new StringBuilder();
+                propsHelp.Append("Properties:");
 
-                // Skip non-meta props that don't match the include or match the exclude patterns
-                if (!isMeta &&
-                    (!Operators.LikeString(prop.Name, HelpInclude, CompareMethod.Text) ||
-                    Operators.LikeString(prop.Name, HelpExclude, CompareMethod.Text)))
-                    continue;
-
-                builder.AppendLine().Append($"\t- {prop.Name}");
-                var doc = docs.GetOrAdd(prop.Xml.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
-                var element = (from x in doc.Root.Descendants()
-                               where x.Name.LocalName == prop.Name
-                               let info = (IXmlLineInfo)x
-                               where info.HasLineInfo() &&
-                                 info.LineNumber == prop.Xml.Location.Line &&
-                                 // LinePosition starts at 1, 0 means no information
-                                 info.LinePosition == (prop.Xml.Location.Column + 1)
-                               select x)
-                              .First();
-
-                if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                foreach (var prop in eval.Properties
+                    .Where(x => x.Xml != null && !x.Name.StartsWith("_"))
+                    .OrderBy(x => x.Name))
                 {
-                    var comment = (XComment)element.PreviousNode;
-                    AppendComment(builder, prop.Name, comment.Value);
+                    var isMeta = Path.GetFileName(prop.Xml.Location.File) == "CoreBuild.Help.targets";
+                    var builder = isMeta ? metaHelp : propsHelp;
+
+                    // Skip non-meta props that don't match the include or match the exclude patterns
+                    if (!isMeta && (!includeExpr.IsMatch(prop.Name) || excludeExpr.IsMatch(prop.Name)))
+                        continue;
+
+                    // Skip non-meta props that are from imports as needed
+                    if (!isMeta && !helpImports && !prop.Xml.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // We got a prop. Flag if non-meta
+                    if (!isMeta)
+                        hasProps = true;
+
+                    builder.AppendLine().Append($"\t- {prop.Name}");
+                    var doc = docs.GetOrAdd(prop.Xml.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
+                    var element = (from x in doc.Root.Descendants()
+                                   where x.Name.LocalName == prop.Name
+                                   let info = (IXmlLineInfo)x
+                                   where info.HasLineInfo() &&
+                                     info.LineNumber == prop.Xml.Location.Line &&
+                                     // LinePosition starts at 1, 0 means no information
+                                     info.LinePosition == (prop.Xml.Location.Column + 1)
+                                   select x)
+                                  .First();
+
+                    if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                    {
+                        var comment = (XComment)element.PreviousNode;
+                        AppendComment(builder, prop.Name, comment.Value);
+                    }
                 }
+
+                if (hasProps)
+                    help.Append(propsHelp.ToString());
             }
 
-            help.AppendLine().AppendLine().Append("Targets:");
-            foreach (var target in eval.Targets
-                .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
-                .Where(x => Operators.LikeString(x.Key, HelpInclude, CompareMethod.Text))
-                .Where(x => !Operators.LikeString(x.Key, HelpExclude, CompareMethod.Text))
-                .OrderBy(x => x.Key))
+            if (helpTargets)
             {
-                help.AppendLine().Append($"\t- {target.Key}");
+                var hasTargets = false;
+                var targetsHelp = new StringBuilder();
+                if (hasProps)
+                    targetsHelp.AppendLine().AppendLine();
 
-                var doc = docs.GetOrAdd(target.Value.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
-                var element = (from x in doc.Root.Descendants()
-                               where x.Name.LocalName == "Target"
-                               let info = (IXmlLineInfo)x
-                               where info.HasLineInfo() &&
-                                 info.LineNumber == target.Value.Location.Line &&
-                                 // LinePosition starts at 1, 0 means no information
-                                 info.LinePosition == (target.Value.Location.Column + 1)
-                               select x)
-                              .First();
-
-                if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                targetsHelp.Append("Targets:");
+                foreach (var target in eval.Targets
+                    .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
+                    .Where(x => includeExpr.IsMatch(x.Key) && !excludeExpr.IsMatch(x.Key))
+                    .OrderBy(x => x.Key))
                 {
-                    var comment = (XComment)element.PreviousNode;
-                    AppendComment(help, target.Key, comment.Value);
+                    hasTargets = true;
+                    targetsHelp.AppendLine().Append($"\t- {target.Key}");
+
+                    var doc = docs.GetOrAdd(target.Value.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo));
+                    var element = (from x in doc.Root.Descendants()
+                                   where x.Name.LocalName == "Target"
+                                   let info = (IXmlLineInfo)x
+                                   where info.HasLineInfo() &&
+                                     info.LineNumber == target.Value.Location.Line &&
+                                     // LinePosition starts at 1, 0 means no information
+                                     info.LinePosition == (target.Value.Location.Column + 1)
+                                   select x)
+                                  .First();
+
+                    if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
+                    {
+                        var comment = (XComment)element.PreviousNode;
+                        AppendComment(targetsHelp, target.Key, comment.Value);
+                    }
                 }
+
+                if (hasTargets)
+                    help.Append(targetsHelp.ToString());
             }
 
             help.AppendLine();
