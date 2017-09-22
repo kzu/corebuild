@@ -134,7 +134,7 @@ Help:
         - HelpTargets: Whether to get help on public targets. Defaults to 'true'
 ```
 
-Note that the documentation can be wrapped in sequences of `=` or `*` which a very common 
+Note that the documentation can be wrapped in sequences of `=` or `*` which is a very common 
 practice in MSBuild targets. You can also further tweak what Help reports by setting the various Help* properties.
 
 `Help` checks for **CoreBuild Standard** compliance when run, as shown above. Non-compliance will
