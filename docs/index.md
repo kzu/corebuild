@@ -7,12 +7,22 @@ to be considered CoreBuild Standard compatible.
 # Why
 
 Building and running repositories with managed code and MSBuild scripts is generally 
-inconsistent because there isn't a common way that all .NET developers adopt, resulting 
-in the need to hope the repository provides a README with instructions.
+inconsistent because there isn't a standard way that all .NET developers adopt. This 
+forces everyone to check a README for instructions almost every single time.
 
-What if there could be a very visible badge that just told you that a repo is compliant 
-with some standard and that would mean you could configure, build test and run it in a 
-uniform way? That's the value that CoreBuild Standard provides.
+What if there was a clear badge that at a glance meant that the repo supports a set 
+of standard operations that can be run uniformly regardless of the internal details 
+of how they are implemented? 
+
+What if getting started on a new project meant just the following steps:
+
+* clone repo
+* `msbuild /t:configure && msbuild /t:build && msbuild /t:run`?
+
+What if you could additionally just do `msbuild /t:test` and ensure your contribution 
+didn't break anything?
+
+That's the value that CoreBuild Standard provides. A standard coding flow at a glance.
 
 # What
 
