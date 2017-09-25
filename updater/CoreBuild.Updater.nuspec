@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>CoreBuild.Updater</id>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <title>CoreBuild: Updater</title>
         <authors>Daniel Cazzulino</authors>
         <licenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</licenseUrl>
