@@ -85,7 +85,7 @@
 		<Exec Command="$(PS) -NoProfile -Command &quot;&amp; { exit [int]($PSVersionTable.PSVersion.Major -lt 3) }&quot;" IgnoreExitCode="true" EchoOff="true" Condition="'$(OS)' == 'Windows_NT'">
 			<Output TaskParameter="ExitCode" PropertyName="LastExitCode" />
 		</Exec>
-		<Error Condition="'$(LastExitCode)' != '0'" Text="Powershell v3 or greater is required on Windows." />
+		<Error Condition="'$(OS)' == 'Windows_NT' And '$(LastExitCode)' != '0'" Text="Powershell v3 or greater is required on Windows." />
 
 		<!-- Should fail on *nix if curl isn't found. -->
 		<Exec Command="command -v curl" Condition="'$(OS)' != 'Windows_NT'" StandardOutputImportance="low" />
