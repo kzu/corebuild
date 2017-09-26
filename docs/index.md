@@ -14,15 +14,7 @@ What if there was a clear badge that at a glance meant that the repo supports a 
 of standard operations that can be run uniformly regardless of the internal details 
 of how they are implemented? 
 
-What if getting started on a new project meant just the following steps:
-
-* clone repo
-* `msbuild /t:configure && msbuild /t:build && msbuild /t:run`?
-
-What if you could additionally just do `msbuild /t:test` and ensure your contribution 
-didn't break anything?
-
-That's the value that CoreBuild Standard provides. A standard coding flow at a glance.
+That's the value that CoreBuild Standard provides. A standard coding flow at a glance, 
 
 # What
 
@@ -53,6 +45,10 @@ Markdown:
 ```
 [![CoreBuild Standard](https://img.shields.io/badge/√_corebuild-standard-blue.svg)](http://www.corebuild.io)
 ```
+
+> NOTE: CoreBuild Standard definition [could also be extended](https://github.com/kzu/corebuild/issues/2) to 
+include batch files (i.e. `build.cmd /configure && > build.cmd /build` and so on), powershell scripts 
+(`.\build.ps1 configure`), bash or makefile scripts if deemed valuable. gd 
 
 # Extras
 
@@ -157,13 +153,13 @@ Creating MSBuild build scripts that can easily consume NuGet packages isn't exac
 so CoreBuild also provides help in that front too. Simply run the following from a PowerShell command prompt:
 
 ```
-	curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
+curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
 ```
 
-or using curl.exe from a regular command prompt:
+or using curl from a regular command prompt (Windows or Mac):
 
 ```
-	curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
+curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
 ```
 
 Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
