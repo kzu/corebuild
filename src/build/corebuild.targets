@@ -29,6 +29,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectCapability Remove="PackagingProject;ProjectReferences;ProjectConfigurationsInferredFromUsage;DependenciesTree;AssemblyReferences;OutputGroups;AllTargetOutputGroups;VisualStudioWellKnownOutputGroups;SingleFileGenerators;DeclaredSourceItems;UserSourceItems;ReferenceManagerAssemblies;ReferenceManagerBrowse;ReferenceManagerProjects" />
+  </ItemGroup>
+  
   <PropertyGroup>
     <ETag />
   </PropertyGroup>
