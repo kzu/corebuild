@@ -3,6 +3,7 @@
   <!-- Import NuGet.targets for Restore -->
   <PropertyGroup>
     <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'=='' and Exists('$(VsInstallRoot)\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets')">$(VsInstallRoot)\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
+    <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'=='' and Exists('$(MSBuildBinPath)\NuGet.targets')">$(MSBuildBinPath)\NuGet.targets</NuGetRestoreTargets>
     <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'=='' and Exists('$(MSBuildExtensionsPath)\NuGet.targets')">$(MSBuildExtensionsPath)\NuGet.targets</NuGetRestoreTargets>
   </PropertyGroup>
   <Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" />
