@@ -37,7 +37,6 @@ namespace CoreBuild.Help
         [Fact]
         public void HelpImportsFalse()
         {
-
             var task = new Help
             {
                 BuildEngine = engine,
@@ -50,6 +49,34 @@ namespace CoreBuild.Help
             Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WBuild:")));
         }
 
+        [Fact]
+        public void HelpImportsTrue()
+        {
+            var task = new Help
+            {
+                BuildEngine = engine,
+                HelpProject = Path.GetFullPath("Test.proj"),
+                HelpImports = "true"
+            };
+
+            Assert.True(task.Execute());
+            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WBeforeBuild:")));
+        }
+
+        [Fact]
+        public void HelpPropOverride()
+        {
+            var task = new Help
+            {
+                BuildEngine = engine,
+                HelpProject = Path.GetFullPath("Test.proj"),
+                HelpImports = "false"
+            };
+
+            Assert.True(task.Execute());
+            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WInheritedProp:")));
+        }
+        
         [Fact]
         public void HelpHidden()
         {

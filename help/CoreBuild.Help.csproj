@@ -58,6 +58,9 @@
     <None Update="CoreBuild.Help.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Test.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Remove="Test.cs" Condition="'$(Configuration)' == 'Release'" />
   </ItemGroup>
 

@@ -85,12 +85,19 @@ namespace CoreBuild.Help
             {
                 var propsHelp = new StringBuilder();
                 propsHelp.Append("Properties:");
-
-                foreach (var prop in eval.Properties
-                    .Where(x => x.Xml != null && !x.Name.StartsWith("_"))
-                    .OrderBy(x => x.Name))
+                var props = new HashSet<string>();
+                
+                foreach (var prop in root.Properties.Concat(eval.Properties.Select(x => x.Xml)
+                    .Where(x => x != null && !x.Name.StartsWith("_"))
+                    .OrderBy(x => x.Name)))
                 {
-                    var isMeta = Path.GetFileName(prop.Xml.Location.File) == "CoreBuild.Help.targets";
+                    // First property to make it to the list wins. 
+                    // Declaring project source is loaded first, followed by evaluated 
+                    // properties.
+                    if (props.Contains(prop.Name))
+                        continue;
+
+                    var isMeta = Path.GetFileName(prop.Location.File) == "CoreBuild.Help.targets";
                     var isLocal = declaredProps.Contains(prop.Name);
                     var builder = isMeta ? metaHelp : propsHelp;
 
@@ -103,11 +110,11 @@ namespace CoreBuild.Help
                         continue;
 
                     var doc = docs.GetOrAdd(
-                        isLocal ? HelpProject : prop.Xml.Location.File,
+                        isLocal ? HelpProject : prop.Location.File,
                         file => XDocument.Load(file, LoadOptions.SetLineInfo));
                     var element = isLocal
                         ? FindElement(doc, prop.Name, root.Properties.First(x => x.Name == prop.Name).Location)
-                        : FindElement(doc, prop.Name, prop.Xml.Location);
+                        : FindElement(doc, prop.Name, prop.Location);
 
                     var label = element.Parent.Attribute("Label");
                     // If the element exists within a group labeled as "Hidden", skip it
@@ -131,6 +138,8 @@ namespace CoreBuild.Help
                         builder.AppendLine().Append($"\t- {prop.Name}");
                         if (!string.IsNullOrWhiteSpace(comment))
                             AppendComment(builder, prop.Name, comment);
+
+                        props.Add(prop.Name);
                     }
                 }
 
