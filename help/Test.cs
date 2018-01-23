@@ -51,18 +51,18 @@ namespace CoreBuild.Help
         }
 
         [Fact]
-        public void HelpImportsTrue()
+        public void HelpHidden()
         {
-
             var task = new Help
             {
                 BuildEngine = engine,
                 HelpProject = Path.GetFullPath("Test.proj"),
-                HelpImports = "true"
             };
 
             Assert.True(task.Execute());
-            Assert.True(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\BeforeBuild:")));
+            Assert.False(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WHiddenTarget:")));
+            Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("HiddenProp:")));
+            Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("HiddenGroup:")));
         }
 
         [Fact]

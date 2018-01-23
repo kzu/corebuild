@@ -109,9 +109,18 @@ namespace CoreBuild.Help
                         ? FindElement(doc, prop.Name, root.Properties.First(x => x.Name == prop.Name).Location)
                         : FindElement(doc, prop.Name, prop.Xml.Location);
 
+                    var label = element.Parent.Attribute("Label");
+                    // If the element exists within a group labeled as "Hidden", skip it
+                    if (label != null && label.Value.Equals("hidden", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
                     var comment = "";
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
                         comment = ((XComment)element.PreviousNode).Value;
+
+                    // Also allow hiding specific properties or targets with an @hidden annotation via a comment.
+                    if (comment.Trim().ToLowerInvariant().Contains("@hidden"))
+                        continue;
 
                     if (isMeta || satisfiesSearch(prop.Name) || satisfiesSearch(comment))
                     {
@@ -155,6 +164,10 @@ namespace CoreBuild.Help
                     var comment = "";
                     if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
                         comment = ((XComment)element.PreviousNode).Value;
+
+                    // Also allow hiding specific properties or targets with an @hidden annotation via a comment.
+                    if (comment.Trim().ToLowerInvariant().Contains("@hidden"))
+                        continue;
 
                     if (satisfiesSearch(target.Key) || satisfiesSearch(comment))
                     {
