@@ -40,7 +40,7 @@
     <PackageReference Include="Microsoft.Build" Version="15.*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" PrivateAssets="all" />
     <PackageReference Include="NuGet.Build.Packaging" Version="*" PrivateAssets="all" />
-    <PackageReference Include="GitInfo" Version="*" PrivateAssets="all" />
+    <PackageReference Include="GitInfo" Version="2.0.8" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -61,7 +61,7 @@
     <Compile Remove="Test.cs" Condition="'$(Configuration)' == 'Release'" />
   </ItemGroup>
 
-  <Target Name="SetAssemblyVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Condition="'$(GitInfoImported)' == 'true'">
+  <Target Name="SetVersions" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Condition="'$(GitInfoImported)' == 'true'">
     <PropertyGroup>
       <Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</Version>
       <PackageVersion>$(Version)</PackageVersion>
