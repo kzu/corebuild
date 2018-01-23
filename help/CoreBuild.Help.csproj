@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <PackageId>CoreBuild.Help</PackageId>
-    <Version>0.1.1</Version>
     <Authors>Daniel Cazzulino</Authors>
     <Company />
     <Product />
@@ -15,7 +14,11 @@
     <PackageLicenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kzu/corebuild/</PackageProjectUrl>
 
+    <IncludeContentInPackage>false</IncludeContentInPackage>
+    <IncludeOutputsInPackage>false</IncludeOutputsInPackage>
     <IsDevelopmentDependency>true</IsDevelopmentDependency>
+    <!-- We never want to import the SDK Pack targets, since they conflict with nugetizer -->
+    <NuGetBuildTasksPackTargets>NO-SDK-TARGETS</NuGetBuildTasksPackTargets>
     <InferPackageContents>false</InferPackageContents>
   </PropertyGroup>
 
@@ -34,15 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="15.*" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="*" />
-    <PackageReference Include="GitInfo" Version="*" />
+    <PackageReference Include="Microsoft.Build" Version="15.*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" PrivateAssets="all" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="*" PrivateAssets="all" />
+    <PackageReference Include="GitInfo" Version="*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="xunit" Version="2.2.0" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
