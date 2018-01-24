@@ -3,7 +3,10 @@
   <PropertyGroup>
     <InheritedProp />
 
-    <OnlyImportedProp />
+    <!-- This is the documented version -->
+    <OnlyImportedProp Condition="'$(OnlyImportedProp)' == ''">$(OnlyImportedPropDefault)</OnlyImportedProp>
+    <OnlyImportedProp Condition="'$(OnlyImportedProp)' == ''">Exp</OnlyImportedProp>
+    <OnlyImportedProp Condition="'$(OnlyImportedProp)' == '.'" />
   </PropertyGroup>
 
   <Target Name="OnlyImportedTarget" />

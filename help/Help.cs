@@ -51,22 +51,39 @@ namespace CoreBuild.Help
         public override bool Execute()
         {
             var collection = new ProjectCollection();
+            var xml = new ConcurrentDictionary<string, XDocument>(StringComparer.OrdinalIgnoreCase);
             var root = ProjectRootElement.Open(HelpProject, collection);
-            var docs = new ConcurrentDictionary<string, XDocument>();
             var eval = new Project(root, null, null, collection);
-            
-            var declaredProps = new HashSet<string>(root.Properties.Select(x => x.Name).Distinct((StringComparer.OrdinalIgnoreCase)));
-            var declaredTargets = new HashSet<string>(root.Targets.Select(x => x.Name).Distinct(), StringComparer.OrdinalIgnoreCase);
+
+            var logical = eval.GetLogicalProject().ToArray();
+
+            var allProps = logical
+                .OfType<ProjectPropertyElement>()
+                // Add the local props first
+                .Where(x => x.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase))
+                .Concat(logical
+                .OfType<ProjectPropertyElement>()
+                .Where(x => !x.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+
+            var allTargets = logical
+                .OfType<ProjectTargetElement>()
+                // Add the local props first
+                .Where(x => x.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase))
+                .Concat(logical
+                .OfType<ProjectTargetElement>()
+                .Where(x => !x.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
 
             var includeExpr = new Regex(HelpInclude, RegexOptions.IgnoreCase);
             var excludeExpr = new Regex(HelpExclude, RegexOptions.IgnoreCase);
             var searchExpr = new Regex(HelpSearch, RegexOptions.IgnoreCase);
 
             // Should exclude it if it doesn't match the include or matches the exclude
-            Predicate<string> shouldExclude = value 
+            bool ShouldExclude(string value)
                 => (!includeExpr.IsMatch(value) || excludeExpr.IsMatch(value));
 
-            Predicate<string> satisfiesSearch = value 
+            bool SatisfiesSearch(string value)
                 => string.IsNullOrWhiteSpace(HelpSearch) || searchExpr.IsMatch(value);
 
             var helpProperties = bool.Parse(HelpProperties);
@@ -77,10 +94,11 @@ namespace CoreBuild.Help
             metaHelp.Append("Help: properties to customize what 'Help' reports");
 
             var help = new StringBuilder();
-            var standard = eval.Targets.ContainsKey("Configure") &&
-                eval.Targets.ContainsKey("Build") &&
-                eval.Targets.ContainsKey("Test") &&
-                eval.Targets.ContainsKey("Run");
+            var standard = 
+                allTargets.Any(t => t.Name == "Configure") &&
+                allTargets.Any(t => t.Name == "Build") &&
+                allTargets.Any(t => t.Name == "Test") &&
+                allTargets.Any(t => t.Name == "Run");
 
             if (standard)
             {
@@ -97,64 +115,57 @@ namespace CoreBuild.Help
             {
                 var propsHelp = new StringBuilder();
                 propsHelp.Append("Properties:");
-                var addedProps = new HashSet<string>();
+                var processed = new HashSet<string>();
                 var alwaysInclude = new HashSet<string>(HelpProperty.Select(x => x.ItemSpec));
                 
-                foreach (var prop in root.Properties.Concat(eval.Properties.Select(x => x.Xml)
+                foreach (var prop in allProps
                     .Where(x => x != null && !x.Name.StartsWith("_"))
-                    .OrderBy(x => x.Name)))
+                    .OrderBy(x => x.Name))
                 {
                     // First property to make it to the list wins. 
-                    // Target project source is loaded first, followed by evaluated properties.
-                    if (addedProps.Contains(prop.Name))
+                    // Target project source is loaded first, followed by imported properties.
+                    if (processed.Contains(prop.Name))
                         continue;
 
                     var isMeta = Path.GetFileName(prop.Location.File) == "CoreBuild.Help.targets";
-                    var isLocal = declaredProps.Contains(prop.Name);
                     var builder = isMeta ? metaHelp : propsHelp;
 
                     if (!alwaysInclude.Contains(prop.Name))
                     {
                         // Skip non-meta props that should be excluded
-                        if (!isMeta && shouldExclude(prop.Name))
+                        if (!isMeta && ShouldExclude(prop.Name))
+                        {
+                            processed.Add(prop.Name);
                             continue;
+                        }
 
+                        var isLocal = prop.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase);
                         // Skip non-meta props that are from imports as needed
                         if (!isMeta && !helpImports && !isLocal)
+                        {
+                            processed.Add(prop.Name);
                             continue;
+                        }
                     }
 
-                    var doc = docs.GetOrAdd(
-                        isLocal ? HelpProject : prop.Location.File,
-                        file => XDocument.Load(file, LoadOptions.SetLineInfo));
-                    var element = isLocal
-                        ? FindElement(doc, prop.Name, root.Properties.First(x => x.Name == prop.Name).Location)
-                        : FindElement(doc, prop.Name, prop.Location);
-
-                    var label = element.Parent.Attribute("Label");
-                    // If the element exists within a group labeled as "Hidden", skip it
-                    if (label != null && label.Value.Equals("hidden", StringComparison.OrdinalIgnoreCase))
+                    var candidate = new CandidateElement(prop.Name, allProps.Where(x => x.Name == prop.Name), xml);
+                    if (candidate.IsHidden)
+                    {
+                        processed.Add(prop.Name);
                         continue;
+                    }
 
-                    var comment = "";
-                    if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
-                        comment = ((XComment)element.PreviousNode).Value;
-
-                    // Also allow hiding specific properties or targets with an @hidden annotation via a comment.
-                    if (comment.Trim().ToLowerInvariant().Contains("@hidden"))
-                        continue;
-
-                    if (isMeta || satisfiesSearch(prop.Name) || satisfiesSearch(comment))
+                    if (isMeta || alwaysInclude.Contains(prop.Name) || SatisfiesSearch(prop.Name) || SatisfiesSearch(candidate.Comment))
                     {
                         // We got a prop. Flag if non-meta
                         if (!isMeta)
                             hasProps = true;
 
                         builder.AppendLine().Append($"\t- {prop.Name}");
-                        if (!string.IsNullOrWhiteSpace(comment))
-                            AppendComment(builder, prop.Name, comment);
+                        if (!string.IsNullOrWhiteSpace(candidate.Comment))
+                            AppendComment(builder, prop.Name, candidate.Comment);
 
-                        addedProps.Add(prop.Name);
+                        processed.Add(prop.Name);
                     }
                 }
 
@@ -169,38 +180,45 @@ namespace CoreBuild.Help
                 if (hasProps)
                     targetsHelp.AppendLine().AppendLine();
 
+                targetsHelp.Append("Targets:");
+                var processed = new HashSet<string>();
                 var alwaysInclude = new HashSet<string>(HelpTarget.Select(x => x.ItemSpec));
 
-                targetsHelp.Append("Targets:");
-                foreach (var target in eval.Targets
-                    .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
-                    .Where(x => alwaysInclude.Contains(x.Key) || !shouldExclude(x.Key))
-                    // Skip targets that are from imports as needed
-                    .Where(x => helpImports ? true : alwaysInclude.Contains(x.Key) || declaredTargets.Contains(x.Key))
-                    .OrderBy(x => x.Key))
+                foreach (var target in allTargets
+                    .Where(x => x.Name != "Help" && !x.Name.StartsWith("_"))
+                    .OrderBy(x => x.Name))
                 {
-                    var isLocal = declaredTargets.Contains(target.Key);
-                    var doc = docs.GetOrAdd(
-                        declaredTargets.Contains(target.Key) ? HelpProject : target.Value.Location.File, 
-                        file => XDocument.Load(file, LoadOptions.SetLineInfo));
-
-                    var element = isLocal
-                        ? FindElement(doc, "Target", root.Targets.First(x => x.Name == target.Key).Location)
-                        : FindElement(doc, "Target", target.Value.Location);
-                    var comment = "";
-                    if (element.PreviousNode != null && element.PreviousNode.NodeType == XmlNodeType.Comment)
-                        comment = ((XComment)element.PreviousNode).Value;
-
-                    // Also allow hiding specific properties or targets with an @hidden annotation via a comment.
-                    if (comment.Trim().ToLowerInvariant().Contains("@hidden"))
+                    // First target to make it to the list wins. 
+                    // Target project source is loaded first, followed by imported targets.
+                    if (processed.Contains(target.Name))
                         continue;
 
-                    if (alwaysInclude.Contains(target.Key) || satisfiesSearch(target.Key) || satisfiesSearch(comment))
+                    if (!alwaysInclude.Contains(target.Name))
+                    {
+                        var isLocal = target.Location.File.Equals(HelpProject, StringComparison.OrdinalIgnoreCase);
+                        // Skip targets that should be excluded
+                        if (ShouldExclude(target.Name) ||
+                            // Skip targets that are from imports as needed
+                            (!helpImports && !isLocal))
+                        {
+                            processed.Add(target.Name);
+                            continue;
+                        }
+                    }
+
+                    var candidate = new CandidateElement(target.Name, allTargets.Where(x => x.Name == target.Name), xml);
+                    if (candidate.IsHidden)
+                    {
+                        processed.Add(target.Name);
+                        continue;
+                    }
+
+                    if (alwaysInclude.Contains(target.Name) || SatisfiesSearch(target.Name) || SatisfiesSearch(candidate.Comment))
                     {
                         hasTargets = true;
-                        targetsHelp.AppendLine().Append($"\t- {target.Key}");
-                        if (!string.IsNullOrWhiteSpace(comment))
-                            AppendComment(targetsHelp, target.Key, comment);
+                        targetsHelp.AppendLine().Append($"\t- {target.Name}");
+                        if (!string.IsNullOrWhiteSpace(candidate.Comment))
+                            AppendComment(targetsHelp, target.Name, candidate.Comment);
                     }
                 }
 
@@ -216,9 +234,8 @@ namespace CoreBuild.Help
             return true;
         }
 
-        XElement FindElement(XDocument doc, string elementName, ElementLocation location)
+        static XElement GetXml(XDocument doc, ElementLocation location)
             => (from x in doc.Root.Descendants()
-                where x.Name.LocalName == elementName
                 let info = (IXmlLineInfo)x
                 where info.HasLineInfo() &&
                     info.LineNumber == location.Line &&
@@ -249,6 +266,44 @@ namespace CoreBuild.Help
                     help.AppendLine().Append(indent).Append(line.Trim());
                 }
             }
+        }
+
+        class CandidateElement
+        {
+            string name;
+            IEnumerable<ProjectElement> elements;
+            ConcurrentDictionary<string, XDocument> xmlDocs;
+
+            public CandidateElement(string name, IEnumerable<ProjectElement> elements, ConcurrentDictionary<string, XDocument> xmlDocs)
+            {
+                this.name = name;
+                this.elements = elements;
+                this.xmlDocs = xmlDocs;
+
+                // Allows hiding via the Label attribute.
+                IsHidden = elements.Any(e =>
+                    e.Label.Equals("hidden", StringComparison.OrdinalIgnoreCase) ||
+                    e.Parent.Label.Equals("hidden", StringComparison.OrdinalIgnoreCase));
+
+                // Get the first with a comment? The one with the longest comment?
+                var comments = elements
+                    .Select(e => GetXml(
+                            xmlDocs.GetOrAdd(e.Location.File, file => XDocument.Load(file, LoadOptions.SetLineInfo)),
+                            e.Location))
+                    .Where(e => e.PreviousNode?.NodeType == XmlNodeType.Comment)
+                    .Select(e => ((XComment)e.PreviousNode).Value.Trim())
+                    .Where(c => !string.IsNullOrEmpty(c));
+
+                Comment = string.Join(Environment.NewLine, comments);
+
+                if (!IsHidden)
+                    // Also allow hiding specific properties or targets with an @hidden annotation via a comment.
+                    IsHidden = Comment.IndexOf("@hidden", StringComparison.OrdinalIgnoreCase) != -1;
+            }
+
+            public bool IsHidden { get; }
+
+            public string Comment { get; }
         }
     }
 }

@@ -5,6 +5,7 @@
 
   <PropertyGroup>
     <!-- Whether the build is a CI build -->
+    <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
     <CI Condition="'$(CI)' == ''">true</CI>
     <_Deploy>false</_Deploy>
 
