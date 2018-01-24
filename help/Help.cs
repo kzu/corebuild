@@ -34,6 +34,18 @@ namespace CoreBuild.Help
         [Required]
         public string HelpExclude { get; set; } = "$^";
 
+        /// <summary>
+        /// Explicit properties to always include in documentation, 
+        /// regardless of whether they are from imported targets.
+        /// </summary>
+        public ITaskItem[] HelpProperty { get; set; } = new ITaskItem[0];
+
+        /// <summary>
+        /// Explicit targets to always include in documentation, 
+        /// regardless of whether they are from imported targets.
+        /// </summary>
+        public ITaskItem[] HelpTarget { get; set; } = new ITaskItem[0];
+
         public string HelpSearch { get; set; } = "";
 
         public override bool Execute()
@@ -85,29 +97,32 @@ namespace CoreBuild.Help
             {
                 var propsHelp = new StringBuilder();
                 propsHelp.Append("Properties:");
-                var props = new HashSet<string>();
+                var addedProps = new HashSet<string>();
+                var alwaysInclude = new HashSet<string>(HelpProperty.Select(x => x.ItemSpec));
                 
                 foreach (var prop in root.Properties.Concat(eval.Properties.Select(x => x.Xml)
                     .Where(x => x != null && !x.Name.StartsWith("_"))
                     .OrderBy(x => x.Name)))
                 {
                     // First property to make it to the list wins. 
-                    // Declaring project source is loaded first, followed by evaluated 
-                    // properties.
-                    if (props.Contains(prop.Name))
+                    // Target project source is loaded first, followed by evaluated properties.
+                    if (addedProps.Contains(prop.Name))
                         continue;
 
                     var isMeta = Path.GetFileName(prop.Location.File) == "CoreBuild.Help.targets";
                     var isLocal = declaredProps.Contains(prop.Name);
                     var builder = isMeta ? metaHelp : propsHelp;
 
-                    // Skip non-meta props that should be excluded
-                    if (!isMeta && shouldExclude(prop.Name))
-                        continue;
+                    if (!alwaysInclude.Contains(prop.Name))
+                    {
+                        // Skip non-meta props that should be excluded
+                        if (!isMeta && shouldExclude(prop.Name))
+                            continue;
 
-                    // Skip non-meta props that are from imports as needed
-                    if (!isMeta && !helpImports && !isLocal)
-                        continue;
+                        // Skip non-meta props that are from imports as needed
+                        if (!isMeta && !helpImports && !isLocal)
+                            continue;
+                    }
 
                     var doc = docs.GetOrAdd(
                         isLocal ? HelpProject : prop.Location.File,
@@ -139,7 +154,7 @@ namespace CoreBuild.Help
                         if (!string.IsNullOrWhiteSpace(comment))
                             AppendComment(builder, prop.Name, comment);
 
-                        props.Add(prop.Name);
+                        addedProps.Add(prop.Name);
                     }
                 }
 
@@ -154,12 +169,14 @@ namespace CoreBuild.Help
                 if (hasProps)
                     targetsHelp.AppendLine().AppendLine();
 
+                var alwaysInclude = new HashSet<string>(HelpTarget.Select(x => x.ItemSpec));
+
                 targetsHelp.Append("Targets:");
                 foreach (var target in eval.Targets
                     .Where(x => x.Key != "Help" && !x.Key.StartsWith("_")).OrderBy(x => x.Key)
-                    .Where(x => !shouldExclude(x.Key))
+                    .Where(x => alwaysInclude.Contains(x.Key) || !shouldExclude(x.Key))
                     // Skip targets that are from imports as needed
-                    .Where(x => helpImports ? true : declaredTargets.Contains(x.Key))
+                    .Where(x => helpImports ? true : alwaysInclude.Contains(x.Key) || declaredTargets.Contains(x.Key))
                     .OrderBy(x => x.Key))
                 {
                     var isLocal = declaredTargets.Contains(target.Key);
@@ -178,7 +195,7 @@ namespace CoreBuild.Help
                     if (comment.Trim().ToLowerInvariant().Contains("@hidden"))
                         continue;
 
-                    if (satisfiesSearch(target.Key) || satisfiesSearch(comment))
+                    if (alwaysInclude.Contains(target.Key) || satisfiesSearch(target.Key) || satisfiesSearch(comment))
                     {
                         hasTargets = true;
                         targetsHelp.AppendLine().Append($"\t- {target.Key}");

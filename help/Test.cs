@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -90,6 +91,28 @@ namespace CoreBuild.Help
             Assert.False(engine.LoggedMessageEvents.Any(e => Regex.IsMatch(e.Message, @"\WHiddenTarget:")));
             Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("HiddenProp:")));
             Assert.False(engine.LoggedMessageEvents.Any(e => e.Message.Contains("HiddenGroup:")));
+        }
+
+        [Fact]
+        public void HelpForceInclude()
+        {
+            var task = new Help
+            {
+                BuildEngine = engine,
+                HelpProject = Path.GetFullPath("Test.proj"),
+                HelpProperty = new ITaskItem[]
+                {
+                    new TaskItem("OnlyImportedProp"),
+                },
+                HelpTarget = new ITaskItem[]
+                {
+                    new TaskItem("OnlyImportedTarget")
+                }
+            };
+
+            Assert.True(task.Execute());
+            Assert.True(engine.LoggedMessageEvents.Any(e => e.Message.Contains("OnlyImportedProp")));
+            Assert.True(engine.LoggedMessageEvents.Any(e => e.Message.Contains("OnlyImportedTarget")));
         }
 
         [Fact]

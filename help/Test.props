@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <InheritedProp />
+
+    <OnlyImportedProp />
   </PropertyGroup>
 
+  <Target Name="OnlyImportedTarget" />
+  
 </Project>

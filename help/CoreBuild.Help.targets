@@ -29,6 +29,8 @@
           HelpTargets="$(HelpTargets)"
           HelpInclude="$(HelpInclude)"
           HelpExclude="$(HelpExclude)"
+          HelpProperty="@(HelpProperty)"
+          HelpTarget="@(HelpTarget)"
           HelpSearch="$(HelpSearch)"/>
   </Target>
 
