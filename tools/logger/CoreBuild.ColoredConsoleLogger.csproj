@@ -27,15 +27,10 @@
 
   <ItemGroup>
     <PackageFile Include="Readme.txt" TargetPath="Readme.txt" />
+    <PackageFile Include="CoreBuild.ColoredConsoleLogger.targets" TargetPath="build\CoreBuild.ColoredConsoleLogger.targets" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="tools\$(AssemblyName).dll" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="tools\$(AssemblyName).pdb" />
     <PackageFile Include="$(OutputPath)Colorful.Console.dll" TargetPath="tools\Colorful.Console.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="CoreBuild.ConsoleLogger.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="SetVersions" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Condition="'$(GitInfoImported)' == 'true'">

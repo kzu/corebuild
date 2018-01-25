@@ -15,7 +15,7 @@
              Text="Found existing 'msbuild.rsp'. Prepending '/noconsolelogger' and '/logger' arguments."
              Importance="high" />
 
-    <Message Condition="'$(_ShouldConfigureColoredConsole)' == 'false'"
+    <Message Condition="'$(_ShouldConfigureColoredConsole)' != 'true'"
              Text="Found existing 'msbuild.rsp' with the right arguments. No updates will be performed."
              Importance="high" />
 

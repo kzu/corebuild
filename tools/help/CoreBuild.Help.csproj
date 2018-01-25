@@ -51,6 +51,7 @@
     <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="build\$(AssemblyName).dll" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="build\$(AssemblyName).pdb" />
     <PackageFile Include="CoreBuild.Help.targets" TargetPath="build\CoreBuild.Help.targets" />
+    <PackageFile Include="CoreBuild.ColoredConsoleLogger" Version="1.0.0" Kind="Dependency" />
   </ItemGroup>
 
   <ItemGroup>
