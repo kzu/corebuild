@@ -22,7 +22,7 @@
     <WriteLinesToFile Condition="'$(_ShouldConfigureColoredConsole)' == 'true'"
 											File="msbuild.rsp"
 											Lines="/noconsolelogger
-/logger:ColoredConsoleLogger,%userprofile%\.nuget\packages\CoreBuild.ColoredConsoleLogger\1.0.0\tools\CoreBuild.ColoredConsoleLogger.dll
+/logger:ColoredConsoleLogger,%userprofile%\.nuget\packages\CoreBuild.ColoredConsoleLogger\1.0.2\tools\CoreBuild.ColoredConsoleLogger.dll
 /p:ColoredConsole=true
 $(_ResponseFile)"
 											Overwrite="true" />
