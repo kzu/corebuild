@@ -12,7 +12,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace CoreBuild.Help
+namespace CoreBuild
 {
     public class Help : Task
     {
@@ -102,11 +102,11 @@ namespace CoreBuild.Help
 
             if (standard)
             {
-                help.AppendLine("Standard: YES √ (Configure, Build, Test and Run targets supported)").AppendLine();
+                help.AppendLine("Standard: {YES:LawnGreen} √ (Configure, Build, Test and Run targets supported)").AppendLine();
             }
             else
             {
-                help.AppendLine("Standard: NO x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io").AppendLine();
+                help.AppendLine("Standard: {NO:Tomato} x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io").AppendLine();
                 Log.LogWarning(null, "CB01", null, null, 0, 0, 0, 0, "This project is NOT CoreBuild Standard compatible. Please provide Configure, Build, Test and Run targets. Lean more at http://corebuild.io");
             }
 
@@ -161,7 +161,11 @@ namespace CoreBuild.Help
                         if (!isMeta)
                             hasProps = true;
 
-                        builder.AppendLine().Append($"\t- {prop.Name}");
+                        if (isMeta)
+                            builder.AppendLine().Append($"\t- {prop.Name}");
+                        else
+                            builder.AppendLine().Append($"\t- {{{prop.Name}:Aqua}}");
+
                         if (!string.IsNullOrWhiteSpace(candidate.Comment))
                             AppendComment(builder, prop.Name, candidate.Comment);
 
@@ -216,7 +220,7 @@ namespace CoreBuild.Help
                     if (alwaysInclude.Contains(target.Name) || SatisfiesSearch(target.Name) || SatisfiesSearch(candidate.Comment))
                     {
                         hasTargets = true;
-                        targetsHelp.AppendLine().Append($"\t- {target.Name}");
+                        targetsHelp.AppendLine().Append($"\t- {{{target.Name}:Yellow}}");
                         if (!string.IsNullOrWhiteSpace(candidate.Comment))
                             AppendComment(targetsHelp, target.Name, candidate.Comment);
                     }

@@ -1,0 +1,35 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Initializes an msbuild.rsp file alongside the built project, with parameters to consume the logger in the next build. -->
+  <Target Name="ColoredConsole">
+    <PropertyGroup>
+      <_ResponseFile Condition="Exists('msbuild.rsp')">$([System.IO.File]::ReadAllText('msbuild.rsp'))</_ResponseFile>
+      <_ShouldConfigureColoredConsole Condition="!Exists('msbuild.rsp') or $(_ResponseFile.IndexOf('CoreBuild.ColoredConsoleLogger.dll')) == '-1' ">true</_ShouldConfigureColoredConsole>
+    </PropertyGroup>
+
+    <Message Condition="!Exists('msbuild.rsp')"
+             Text="Creating a new 'msbuild.rsp' with the '/noconsolelogger' and '/logger' arguments."
+             Importance="high" />
+
+    <Message Condition="Exists('msbuild.rsp') and '$(_ShouldConfigureColoredConsole)' == 'true'"
+             Text="Found existing 'msbuild.rsp'. Prepending '/noconsolelogger' and '/logger' arguments."
+             Importance="high" />
+
+    <Message Condition="'$(_ShouldConfigureColoredConsole)' == 'false'"
+             Text="Found existing 'msbuild.rsp' with the right arguments. No updates will be performed."
+             Importance="high" />
+
+    <WriteLinesToFile Condition="'$(_ShouldConfigureColoredConsole)' == 'true'"
+											File="msbuild.rsp"
+											Lines="/noconsolelogger
+/logger:ColoredConsoleLogger,%userprofile%\.nuget\packages\CoreBuild.ColoredConsoleLogger\1.0.0\tools\CoreBuild.ColoredConsoleLogger.dll
+/p:ColoredConsole=true
+$(_ResponseFile)"
+											Overwrite="true" />
+
+    <Message Condition="'$(_ShouldConfigureColoredConsole)' == 'true'"
+             Text="MSBuild response file 'msbuild.rsp' updated successfully to consume the ColoredConsoleLogger. Try it out by running `msbuild /t:help`!"
+             Importance="high" />
+  </Target>
+
+</Project>

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <PackageId>CoreBuild.ColoredConsoleLogger</PackageId>
+    <Authors>Daniel Cazzulino</Authors>
+    <Company />
+    <Product />
+    <Copyright>Copyright 2018</Copyright>
+    <Title>CoreBuild: ColoredConsoleLogger</Title>
+    <Description>A custom logger that supports emitting messages with full color, with the syntax '{message:color}, where color can be a named color or a hex value starting with '#'.</Description>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>msbuild corebuild</PackageTags>
+    <PackageLicenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kzu/corebuild/</PackageProjectUrl>
+
+    <IsDevelopmentDependency>true</IsDevelopmentDependency>
+    <InferPackageContents>false</InferPackageContents>
+    <IncludeContentInPackage>false</IncludeContentInPackage>
+    <IncludeOutputsInPackage>false</IncludeOutputsInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Colorful.Console" Version="1.2.1" />
+    <PackageReference Include="Microsoft.Build" Version="14.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageFile Include="Readme.txt" TargetPath="Readme.txt" />
+    <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="tools\$(AssemblyName).dll" />
+    <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="tools\$(AssemblyName).pdb" />
+    <PackageFile Include="$(OutputPath)Colorful.Console.dll" TargetPath="tools\Colorful.Console.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="CoreBuild.ConsoleLogger.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="SetVersions" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Condition="'$(GitInfoImported)' == 'true'">
+    <PropertyGroup>
+      <Version>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</Version>
+      <PackageVersion>$(Version)</PackageVersion>
+      <AssemblyVersion>$(Version)</AssemblyVersion>
+      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)</FileVersion>
+      <InformationalVersion>$(AssemblyVersion)-$(GitBranch)+$(GitCommit)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="LocalPublish" AfterTargets="Pack">
+    <Exec Command="rd &quot;$(NuGetPackageRoot)$(PackageId.ToLowerInvariant())&quot; /q /s" Condition="Exists('$(NuGetPackageRoot)$(PackageId.ToLowerInvariant())')" />
+
+    <ItemGroup>
+      <ToDelete Include="$(TEMP)\packages\$(PackageId)*.nupkg" />
+    </ItemGroup>
+    <Delete Files="@(ToDelete)" />
+
+    <MakeDir Directories="$(TEMP)\packages" Condition="!Exists('$(TEMP)\packages')" />
+    <Copy SourceFiles="$(PackageTargetPath)" DestinationFolder="$(TEMP)\packages" />
+  </Target>
+
+</Project>

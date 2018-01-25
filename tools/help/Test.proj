@@ -31,7 +31,9 @@
     Builds the project, duh.
     Pretty much what you expect it to do :P
   -->
-  <Target Name="Build" />
+  <Target Name="Build">
+    <Message Importance="high" Text="{Hello:Aqua} {world:#7FFF00}" />
+  </Target>
 
   <!-- This target is hidden
        @hidden -->

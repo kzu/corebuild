@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- We never want to import the SDK Pack targets, since they conflict with nugetizer -->
+    <NuGetBuildTasksPackTargets>NO-SDK-TARGETS</NuGetBuildTasksPackTargets>
+    <PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="*" PrivateAssets="all" />
+    <PackageReference Include="GitInfo" Version="2.0.8" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

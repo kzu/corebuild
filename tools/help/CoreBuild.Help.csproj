@@ -17,9 +17,8 @@
     <IncludeContentInPackage>false</IncludeContentInPackage>
     <IncludeOutputsInPackage>false</IncludeOutputsInPackage>
     <IsDevelopmentDependency>true</IsDevelopmentDependency>
-    <!-- We never want to import the SDK Pack targets, since they conflict with nugetizer -->
-    <NuGetBuildTasksPackTargets>NO-SDK-TARGETS</NuGetBuildTasksPackTargets>
     <InferPackageContents>false</InferPackageContents>
+    <RootNamespace>CoreBuild</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,10 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Colorful.Console" Version="1.2.1" />
     <PackageReference Include="Microsoft.Build" Version="15.*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" PrivateAssets="all" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="*" PrivateAssets="all" />
-    <PackageReference Include="GitInfo" Version="2.0.8" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -49,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageFile Include="Readme.txt" TargetPath="Readme.txt" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="build\$(AssemblyName).dll" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="build\$(AssemblyName).pdb" />
     <PackageFile Include="CoreBuild.Help.targets" TargetPath="build\CoreBuild.Help.targets" />
