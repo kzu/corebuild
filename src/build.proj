@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <!-- Configures the project in preparation for Build. Includes running Restore. -->
-  <Target Name="Configure" DependsOnTargets="Restore" />
+  <Target Name="Configure" DependsOnTargets="Restore">
+    <!-- Configures the colored console logger that renders /t:Help in a nicer way -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="ColoredConsole" Properties="FORCE_RELOAD=$([System.Guid]::NewGuid().ToString())" />
+  </Target>
 
   <!-- Targets can be documented, and /t:Help will render the help -->
   <Target Name="Build">
