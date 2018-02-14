@@ -153,13 +153,13 @@ Creating MSBuild build scripts that can easily consume NuGet packages isn't exac
 so CoreBuild also provides help in that front too. Simply run the following from a PowerShell command prompt:
 
 ```
-curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
+curl https://bit.ly/corebuild -o build.proj; msbuild /nologo /v:m; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
 ```
 
 or using curl from a regular command prompt (Windows or Mac):
 
 ```
-curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
+curl -k -L https://bit.ly/corebuild -o build.proj && msbuild /nologo /v:m && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
 ```
 
 Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
