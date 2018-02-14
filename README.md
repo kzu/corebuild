@@ -11,22 +11,28 @@ This is typically your repository root.
 
 From a PowerShell command prompt:
 
-		curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:minimal; msbuild build.proj /nologo /t:help
+```
+curl https://bit.ly/corebuild -o build.proj; msbuild /nologo /v:m; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
+```
 
 From a regular command prompt using curl.exe:
 
-		curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:minimal && msbuild build.proj /nologo /t:help
-	
+```
+curl -k -L https://bit.ly/corebuild -o build.proj && msbuild /nologo /v:m && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
+```
+
 The initial "build" is used to initialize the build script by downloading the required dependent 
 targets and persisting the initial `ETag` used afterwards for checking for udpates.
 
 Updating to latest `corebuild` imports:
 
-		msbuild build.proj /t:update
-
+```
+msbuild build.proj /t:update
+```
 or
-
-		build /update
+```
+build /update
+```
 
 > NOTE: updating `corebuild` will never overwrite your custom `build.proj` or 
 > `build.cmd`, only the dependent targets in the `build` subfolder created when initially installed.
@@ -56,6 +62,7 @@ Examples of the increased power allowed by this new combination:
 
 * Levaraging a NuGet package natively for doing versioning:
 
+  ```xml
 		<ItemGroup>
 			<PackageReference Include="GitInfo" Version="*" />
 		</ItemGroup>
@@ -63,6 +70,7 @@ Examples of the increased power allowed by this new combination:
 		<Target Name="Build" DependsOnTargets="GitVersion">
 			...
 		</Target>
+  ```
 
   This brings the latest & greatest version of [GitInfo](https://www.nuget.org/packages/GitInfo) 
   for versioning the built artifacts, for example.
@@ -71,6 +79,7 @@ Examples of the increased power allowed by this new combination:
 
 * Levaraging a NuGet package natively for detecting `XBuild` builds:
 
+  ```xml
 		<ItemGroup>
 			<PackageReference Include="MSBuilder.IsXBuild" Version="*" />
 		</ItemGroup>
@@ -79,12 +88,14 @@ Examples of the increased power allowed by this new combination:
 			<Error Condition="'$(IsXBuild)' == 'true'" Text="This build script requires MSBuild." />
 			...
 		</Target>
+  ```
 
 
 There are many more such reusable build blocks at [MSBuilder](https://github.com/MobileEssentials/MSBuilder).
 
 * Levaraging xunit NuGet package natively for running tests:
 
+  ```xml
 		<ItemGroup>
 			<PackageReference Include="xunit.runner.msbuild" Version="2.2.0" />
 		</ItemGroup>
@@ -96,7 +107,7 @@ There are many more such reusable build blocks at [MSBuilder](https://github.com
 		<Target Name="Test">
 			<xunit Assemblies="@(TestAssembly)" />
 		</Target>
-
+  ```
 
 ## How
 
@@ -116,12 +127,12 @@ NuGet will automatically generate the restore artifacts in the `corebuild\.nuget
 			- build.proj
 			- build.cmd
 			- msbuild.rsp
+			\.nuget
+				- [nuget restore artifacts here, updated by /t:Restore]
 			\build
 				- corebuild.props     [self-updating via /t:Update]
 				- corebuild.targets   [self-updating via /t:Update]
 				- update.targets      [self-updating via /t:Update]
-				\.nuget
-					- [nuget restore artifacts here, updated by /t:Restore]
 
 The `corebuild.props` and `corebuild.targets` then import the generated targets from NuGet, allowing 
 your main `build.proj` project to readily consume their artifacts. 
