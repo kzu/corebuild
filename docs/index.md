@@ -23,7 +23,7 @@ needs to provide the following targets:
 
 * `Configure`: initial target to run right after cloning the repository, typically run 
   only once, unless you modify the project or synchronize changes and dependencies 
-  changed. Would typically do a NuGet restore of projects/solutions too.
+  change. Would typically do a NuGet restore of projects/solutions too.
 
 * `Build`: builds whatever needs to be built in order to use the project.
 
@@ -32,8 +32,8 @@ needs to provide the following targets:
 * `Run`: runs the project.
 
 
-Note that the actual implementation of these targets is completely left to each project, 
-since the meaning of each will vary wildly depending on the project type.
+Note that the actual implementation of these targets is completely left out of the spec 
+and is project-specific, since the meaning of each will vary wildly.
 
 If your project is CoreBuild Standard compatible, just add the following badge on its 
 main page or README: 
@@ -48,7 +48,7 @@ Markdown:
 
 > NOTE: CoreBuild Standard definition [could also be extended](https://github.com/kzu/corebuild/issues/2) to 
 include batch files (i.e. `build.cmd /configure && > build.cmd /build` and so on), powershell scripts 
-(`.\build.ps1 configure`), bash or makefile scripts if deemed valuable. gd 
+(`.\build.ps1 configure`), bash or makefile scripts if deemed valuable.
 
 # Extras
 
