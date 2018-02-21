@@ -1,0 +1,14 @@
+os: Visual Studio 2017
+
+build_script:
+  - cmd: echo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" >> msbuild.rsp
+  - cmd: msbuild src\corebuild.nuproj /t:restore
+  - cmd: msbuild src\corebuild.nuproj /t:build
+
+nuget:
+  project_feed: true
+  disable_publish_on_pr: false
+  
+artifacts:
+  - path: 'src\*.nupkg'
+    name: Package
