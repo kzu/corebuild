@@ -18,12 +18,13 @@
     <HelpSearch Condition="'$(HelpSearch)' == ''"></HelpSearch>
   </PropertyGroup>
 
-  <Target Name="Help">
-    <Message Text="{ __        __          
+  <Target Name="Help" DependsOnTargets="_ConfigureColoredLogger">
+    <Message Condition="'$(ColoredConsole)' == 'true'" Text="{ __        __          
 /   _  _ _|__)   .| _| 
 \__(_)| (-|__)|_|||(_| 
 :Highlight}" />
-    <Help HelpProject="$(HelpProject)"
+    <Help Condition="'$(ColoredConsole)' == 'true'" 
+          HelpProject="$(HelpProject)"
           HelpImports="$(HelpImports)"
           HelpProperties="$(HelpProperties)"
           HelpTargets="$(HelpTargets)"
@@ -32,6 +33,17 @@
           HelpProperty="@(HelpProperty)"
           HelpTarget="@(HelpTarget)"
           HelpSearch="$(HelpSearch)"/>
+  </Target>
+
+  <Target Name="_ConfigureColoredLogger" Condition="'$(ColoredConsole)' != 'true'" >
+    <!-- Configures the colored console logger that renders /t:Help in a nicer way -->
+    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:ColoredConsole /nologo /v:m /noconsolelogger'
+          EchoOff="true"
+          StandardOutputImportance="low" />
+    <!-- Re-run /t:Help with the new configuration -->    
+    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:Help /nologo /v:m'
+          EchoOff="true" />
+    <Message Text="The next 'Help' run will have colored output :)" />
   </Target>
 
 </Project>
