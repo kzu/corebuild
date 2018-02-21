@@ -55,7 +55,8 @@ AssemblyVersion=$(AssemblyVersion)" />
       <SemVerMetadata>$(SemVerMetadata)sha.$(GitCommit)</SemVerMetadata>
 
       <!-- If there is a pre-release label, fix the major.minor.build and increment the release label digit instead. -->
-      <PackageVersion Condition="'$(GitSemVerDashLabel)' != ''">$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel).$(GitCommits)+$(SemVerMetadata)</PackageVersion>
+      <PackageVersion Condition="'$(GitSemVerDashLabel)' != '' and '$(GitCommits)' != '0'">$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel).$(GitCommits)+$(SemVerMetadata)</PackageVersion>
+      <PackageVersion Condition="'$(GitSemVerDashLabel)' != '' and '$(GitCommits)' == '0'">$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel)+$(SemVerMetadata)</PackageVersion>
       <!-- If shipping stable, semver the package version -->
       <PackageVersion Condition="'$(GitSemVerDashLabel)' == ''">$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)+$(SemVerMetadata)</PackageVersion>
       <AssemblyVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</AssemblyVersion>
