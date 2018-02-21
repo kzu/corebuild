@@ -18,7 +18,7 @@ namespace CoreBuild
     {
         static readonly Regex text = new Regex(@"(?<colored>\{(?<text>[^\{\}]+?)\:(?<color>[^\{\}]+?)(?<background>,[^\{\}]+?)?\})|(?<regular>[^\#\{]+)", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        StyleSheet style = new StyleSheet(Color.White);
+        StyleSheet style = new StyleSheet(Console.ForegroundColor);
 
         public ColoredConsoleLogger()
         {
