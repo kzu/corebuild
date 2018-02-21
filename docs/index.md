@@ -6,7 +6,7 @@ to be considered CoreBuild Standard compatible.
 
 # Why
 
-Building and running repositories with managed code and MSBuild scripts is generally 
+Building and testing repositories with managed code and MSBuild scripts is generally 
 inconsistent because there isn't a standard way that all .NET developers adopt. This 
 forces everyone to check a README for instructions almost every single time.
 
@@ -14,7 +14,8 @@ What if there was a clear badge that at a glance meant that the repo supports a 
 of standard operations that can be run uniformly regardless of the internal details 
 of how they are implemented? 
 
-That's the value that CoreBuild Standard provides. A standard coding flow at a glance, 
+That's the value that CoreBuild Standard provides. A standard coding (or contribution) 
+flow at a glance. 
 
 # What
 
@@ -28,8 +29,6 @@ needs to provide the following targets:
 * `Build`: builds whatever needs to be built in order to use the project.
 
 * `Test`: runs tests that ensure the build will work.
-
-* `Run`: runs the project.
 
 
 Note that the actual implementation of these targets is completely left out of the spec 
@@ -58,9 +57,9 @@ the following tools to help you quickly get started with CoreBuild-compatible pr
 ## Help
 
 Documenting MSBuild targets and properties is important and also generally non-standard. 
-To make documenting targets easier for consumers, we provide the 
+To make documenting targets easier and even enjoyable, we provide the 
 [CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) NuGet package, which renders 
-documentation for public configurable properties and additional targets available 
+documentation for public properties and additional targets available 
 in an MSBuild project or script. The basic heuristics are simple:
 
 * Any property or target that doesn't start with an underscore is considered public
@@ -117,7 +116,7 @@ Help:
   /   _  _ _|__)   .| _|
   \__(_)| (-|__)|_|||(_|
 
-  Standard: YES √ (Configure, Build, Test and Run targets supported)
+  Standard: YES √ (Configure, Build and Test targets supported)
 
   Properties:
         - Configuration: Configuration to use for Build. Defaults to 'Debug' if empty.
@@ -153,19 +152,17 @@ Creating MSBuild build scripts that can easily consume NuGet packages isn't exac
 so CoreBuild also provides help in that front too. Simply run the following from a PowerShell command prompt:
 
 ```
-curl https://bit.ly/corebuild -o build.proj; msbuild /nologo /v:m; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
+curl https://corebuild.io/build.proj -o build.proj; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
 ```
 
 or using curl from a regular command prompt (Windows or Mac):
 
 ```
-curl -k -L https://bit.ly/corebuild -o build.proj && msbuild /nologo /v:m && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
+curl -k -L https://corebuild.io/build.proj -o build.proj && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
 ```
 
 Now your `build.proj` contains a basic CoreBuild Standard compatible project you can start adding 
-`PackageReference`s to and run `/t:Restore` and `/t:Help` (see next section on Help).
-
-> NOTE: make sure you commit the `build` directory entirely. 
+`PackageReference`s to and run `/t:Configure` and `/t:Help` as needed.
 
 Learn more about the boostrapping in the [CoreBuild](https://github.com/kzu/corebuild) repository.
 
