@@ -97,17 +97,16 @@ namespace CoreBuild
             var standard = 
                 allTargets.Any(t => t.Name == "Configure") &&
                 allTargets.Any(t => t.Name == "Build") &&
-                allTargets.Any(t => t.Name == "Test") &&
-                allTargets.Any(t => t.Name == "Run");
+                allTargets.Any(t => t.Name == "Test");
 
             if (standard)
             {
-                help.AppendLine("Standard: {YES:LawnGreen} √ (Configure, Build, Test and Run targets supported)").AppendLine();
+                help.AppendLine("Standard: {YES:LawnGreen} √ (Configure, Build and Test targets supported)").AppendLine();
             }
             else
             {
                 help.AppendLine("Standard: {NO:Tomato} x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io").AppendLine();
-                Log.LogWarning(null, "CB01", null, null, 0, 0, 0, 0, "This project is NOT CoreBuild Standard compatible. Please provide Configure, Build, Test and Run targets. Lean more at http://corebuild.io");
+                Log.LogWarning(null, "CB01", null, null, 0, 0, 0, 0, "This project is NOT CoreBuild Standard compatible. Please provide Configure, Build and Test targets. Lean more at http://corebuild.io");
             }
 
             var hasProps = false;
