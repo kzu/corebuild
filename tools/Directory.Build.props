@@ -4,10 +4,17 @@
     <!-- We never want to import the SDK Pack targets, since they conflict with nugetizer -->
     <NuGetBuildTasksPackTargets>NO-SDK-TARGETS</NuGetBuildTasksPackTargets>
     <PackOnBuild>true</PackOnBuild>
+
+    <!-- Tools packages have their own GitInfo -->
+    <GitIgnoreTagVersion>true</GitIgnoreTagVersion>
+    <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
+    <SkipGitCache>true</SkipGitCache>
+    <SkipReadGitCache>true</SkipReadGitCache>
+    <SkipWriteGitCache>true</SkipWriteGitCache>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="[0.2.2,)" PrivateAssets="all" />
-    <PackageReference Include="GitInfo" Version="2.0.8" PrivateAssets="all" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="[0.2.3,)" PrivateAssets="all" />
+    <PackageReference Include="GitInfo" Version="2.0.9" PrivateAssets="all" />
   </ItemGroup>
 </Project>

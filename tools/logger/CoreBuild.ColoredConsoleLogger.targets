@@ -5,6 +5,7 @@
     <PropertyGroup>
       <_ResponseFile Condition="Exists('msbuild.rsp')">$([System.IO.File]::ReadAllText('msbuild.rsp'))</_ResponseFile>
       <_ShouldConfigureColoredConsole Condition="!Exists('msbuild.rsp') or $(_ResponseFile.IndexOf('CoreBuild.ColoredConsoleLogger.dll')) == '-1' ">true</_ShouldConfigureColoredConsole>
+      <_ColoredConsoleLogger>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\tools\CoreBuild.ColoredConsoleLogger.dll'))</_ColoredConsoleLogger>
     </PropertyGroup>
 
     <Message Condition="!Exists('msbuild.rsp')"
@@ -22,7 +23,7 @@
     <WriteLinesToFile Condition="'$(_ShouldConfigureColoredConsole)' == 'true'"
 											File="msbuild.rsp"
 											Lines="/noconsolelogger
-/logger:ColoredConsoleLogger,%userprofile%\.nuget\packages\CoreBuild.ColoredConsoleLogger\1.1.0\tools\CoreBuild.ColoredConsoleLogger.dll
+/logger:ColoredConsoleLogger,$(_ColoredConsoleLogger)
 /p:ColoredConsole=true
 $(_ResponseFile)"
 											Overwrite="true" />
