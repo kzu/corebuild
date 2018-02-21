@@ -11,7 +11,7 @@ build_script:
 
 nuget:
   project_feed: true
-  disable_publish_on_pr: false
+  disable_publish_on_pr: true
 
 deploy:
   - provider: NuGet
@@ -19,7 +19,7 @@ deploy:
       secure: uY/U1R+UWPZBitJVqdNu6ttxZPuZeRoM4iUhYLeIMv8028s32s8vYwHMarF3zHdG
     artifact: Package
     on:
-      branch: master
+      branch: v*
   
 artifacts:
   - path: 'out\*.nupkg'
