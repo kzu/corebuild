@@ -62,6 +62,12 @@ AssemblyVersion=$(AssemblyVersion)" />
       <FileVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</FileVersion>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
+
+    <!-- Update AppVeyor build # to match the actual one being used -->
+    <Exec Command="appveyor UpdateBuild -Version $(PackageVersion)"
+          Condition=" '$(APPVEYOR)' == 'true' "
+          ConsoleToMSBuild="true"
+          ContinueOnError="WarnAndContinue" />    
   </Target>
 
 </Project>
