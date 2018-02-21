@@ -12,6 +12,7 @@
     <Authors>kzu</Authors>
     <Owners>kzu</Owners>
 
+    <PackageIconUrl>https://raw.githubusercontent.com/kzu/corebuild/master/docs/corebuild-32.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/kzu/corebuild/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</PackageLicenseUrl>    
     <Copyright>Copyright © 2018 Daniel Cazzulino</Copyright>
