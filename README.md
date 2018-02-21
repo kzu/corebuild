@@ -3,54 +3,55 @@
 
 Simplified MSBuild-based build scripts empowered by NuGet
 
+`CoreBuild` leverages a feature called MSBuild Sdks, which were introduced very recently in 
+MSBuild 15.0 (Visual Studio 15.6+ in particular) and allows simplified MSBuild project authoring. 
+`CoreBuild` provides the necessary targets and properties to enable NuGet `PackageReference` 
+support in your build scripts.
 
 ## Installing
 
-Create the folder where you will author the corebuild-based script. 
-This is typically your repository root.
+Just create your SDK-style MSBuild script project as follows:
+
+```xml
+<Project Sdk="CoreBuild/0.5.0-*">
+	<!-- Your properties, targets and PackageReference items here -->
+</Project>
+```
+
+> NOTE: Consider making it [CoreBuild Standard](http://www.corebuild.io) 
+> compliant so that your contributors can easily know what steps are necessary to 
+> clone, configure, build, test and run your project.
+
+Alternatively, you can download and boostrap the project in a single 
+command by running the following on the folder you intend to create 
+the new `build.proj` file, typically your repository root.
 
 From a PowerShell command prompt:
 
 ```
-curl https://bit.ly/corebuild -o build.proj; msbuild /nologo /v:m; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
+curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:m; msbuild build.proj /nologo /t:help
 ```
 
 From a regular command prompt using curl.exe:
 
 ```
-curl -k -L https://bit.ly/corebuild -o build.proj && msbuild /nologo /v:m && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
+curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:m && msbuild build.proj /nologo /t:help
 ```
 
-The initial "build" is used to initialize the build script by downloading the required dependent 
-targets and persisting the initial `ETag` used afterwards for checking for udpates.
-
-Updating to latest `corebuild` imports:
-
-```
-msbuild build.proj /t:update
-```
-or
-```
-build /update
-```
-
-> NOTE: updating `corebuild` will never overwrite your custom `build.proj` or 
-> `build.cmd`, only the dependent targets in the `build` subfolder created when initially installed.
-
+This will download the [sample project](https://github.com/kzu/corebuild/blob/master/build.proj), 
+run `/t:Configure` to restore packages, and run the `/t:Help` target so you can see how documentation 
+can be authored and rendered nicely from your build project.
 
 ## What
 
-`corebuild` provides a [basic starting point](https://github.com/kzu/corebuild/blob/master/src/build.proj) 
+`CoreBuild` provides a [basic starting point](https://github.com/kzu/corebuild/blob/master/build.proj) 
 for writing build scripts using MSBuild taking advantage of the newest features of MSBuild 15+ 
 and NuGet packages for consuming reusable MSBuild props, targets and tasks which is also 
 [CoreBuild Standard](http://www.corebuild.io) compliant.
 
-It also provides a [default batch file](https://github.com/kzu/corebuild/blob/master/src/build.cmd) 
-that can be used to easily ensure the basic requirements are met (MSBuild 15+ and Visual Studio 
-2017+ developer command prompt).
-
-Finally, it provides automatic targets and properties help via the the 
-[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) package.
+CoreBuild also provides automatic targets and properties help via the the 
+[CoreBuild.Help](https://www.nuget.org/packages/CoreBuild.Help) package, which is 
+automatically referenced by the SDK.
 
 ## Why
 
@@ -111,37 +112,25 @@ There are many more such reusable build blocks at [MSBuilder](https://github.com
 
 ## How
 
-`corebuild` provides a [.props](https://github.com/kzu/corebuild/blob/master/src/build/corebuild.props) and 
-a [.targets](https://github.com/kzu/corebuild/blob/master/src/build/corebuild.targets) that configure the 
-relevant NuGet imports to turn on package restore and consume the build targets and tasks provided by those 
-packages.
+In order to enable package restore from MSBuild, the `CoreBuild` SDK opts-in to the NuGet 4.0 
+features available in VS2017 for s"SDK Style" MSBuild projects, by specifying `netstandard1.0` as 
+its [TargetFramework](https://github.com/kzu/corebuild/blob/master/src/Sdk/Sdk.props#L4).
 
-In order to enable package restore from MSBuild, `corebuild` opts-in to the NuGet 4.0 features available 
-in VS2017 for "SDK Style" MSBuild projects, by specifying `netstandard1.0` as its 
-[TargetFramework](https://github.com/kzu/corebuild/blob/master/src/build/corebuild.props#L5).
-
-NuGet will automatically generate the restore artifacts in the `corebuild\.nuget` folder alongside your 
-`corebuild.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`):
+NuGet will automatically generate the restore artifacts in the `.nuget` folder alongside your 
+`build.proj`, which is typically ignored by default in source control (i.e. via `.gitignore`):
 
 		\root
 			- build.proj
-			- build.cmd
-			- msbuild.rsp
 			\.nuget
 				- [nuget restore artifacts here, updated by /t:Restore]
-			\build
-				- corebuild.props     [self-updating via /t:Update]
-				- corebuild.targets   [self-updating via /t:Update]
-				- update.targets      [self-updating via /t:Update]
 
-The `corebuild.props` and `corebuild.targets` then import the generated targets from NuGet, allowing 
+The `Sdk.props` and `Sdk.targets` then import the generated targets from NuGet, allowing 
 your main `build.proj` project to readily consume their artifacts. 
-A typical [`corebuild.proj`](https://github.com/kzu/corebuild/blob/master/src/build.proj) therefore 
+A typical [`build.proj`](https://github.com/kzu/corebuild/blob/master/src/build.proj) therefore 
 looks quite clean:
 
 ```xml
-<Project DefaultTargets="Build">
-	<Import Project="corebuild\corebuild.props" />
+<Project Sdk="CoreBuild/[VERSION]" DefaultTargets="Build">
 
 	<ItemGroup>
 		<!-- Some PackageReferences for reusable MSBuild "scriptlets"... -->
@@ -157,11 +146,5 @@ looks quite clean:
 
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
-	<Import Project="corebuild\corebuild.targets" />
 </Project>
 ```
-
-`corebuild` also provides its own self-updating mechanism via the [CoreBuild.Updater](https://www.nuget.org/packages/CoreBuild.Updater) 
-nuget package, which intelligently updates the main `.props` and `.targets` by checking the persisted local 
-[ETag](https://github.com/kzu/corebuild/blob/master/src/build/corebuild.props#L13) property against the 
-GitHub-provided one for the raw file in the main repository.
