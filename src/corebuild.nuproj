@@ -5,8 +5,8 @@
   <PropertyGroup>
     <PackageId>CoreBuild</PackageId>
     <Title>CoreBuild SDK</Title>
-    <Summary>MSBuild SDK package to create NuGet-powered build scripts</Summary>
-    <Description>MSBuild SDK package to create NuGet-powered build scripts</Description>
+    <Summary>MSBuild SDK package to create NuGet powered and self documenting build scripts</Summary>
+    <Description>MSBuild SDK package to create NuGet powered and self documenting build scripts</Description>
     <PackageTags>msbuild corebuild</PackageTags>
 
     <Authors>kzu</Authors>
