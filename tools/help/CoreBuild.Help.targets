@@ -37,11 +37,11 @@
 
   <Target Name="_ConfigureColoredLogger" Condition="'$(ColoredConsole)' != 'true'" >
     <!-- Configures the colored console logger that renders /t:Help in a nicer way -->
-    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:ColoredConsole /nologo /v:m /noconsolelogger'
+    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:ColoredConsole /nologo /v:m /noconsolelogger /noautoresponse'
           EchoOff="true"
           StandardOutputImportance="low" />
     <!-- Re-run /t:Help with the new configuration -->    
-    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:Help /nologo /v:m'
+    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:Help /nologo /v:m /noautoresponse'
           EchoOff="true" />
     <Message Text="The next 'Help' run will have colored output :)" />
   </Target>
