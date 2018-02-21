@@ -3,8 +3,11 @@ os: Visual Studio 2017
 build_script:
   - cmd: echo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" >> msbuild.rsp
   - cmd: mkdir %TEMP%\packages || echo Local packages directory already exists
+  - cmd: mkdir out
   - cmd: msbuild src\corebuild.nuproj /t:restore
-  - cmd: msbuild src\corebuild.nuproj
+  - cmd: msbuild tools\CoreBuild.Tools.sln /t:restore
+  - cmd: msbuild src\corebuild.nuproj /p:PackageOutputPath=%cd%\out
+  - cmd: msbuild tools\CoreBuild.Tools.sln /p:PackageOutputPath=%cd%\out
 
 nuget:
   project_feed: true
@@ -19,5 +22,5 @@ deploy:
       branch: master
   
 artifacts:
-  - path: 'src\*.nupkg'
+  - path: 'out\*.nupkg'
     name: Package
