@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <PackageId>CoreBuild.Help</PackageId>
-    <Authors>Daniel Cazzulino</Authors>
-    <Company />
-    <Product />
-    <Copyright>Copyright 2017</Copyright>
+    <Authors>kzu</Authors>
+    <Owners>kzu</Owners>
+    <Copyright>Copyright © 2018 Daniel Cazzulino</Copyright>
+
     <Title>CoreBuild: Help</Title>
     <Description>Provides the Help target that dynamically lists available targets and properties in the current project.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
@@ -36,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Colorful.Console" Version="1.2.1" />
     <PackageReference Include="Microsoft.Build" Version="15.*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.*" PrivateAssets="all" />
   </ItemGroup>
@@ -51,7 +50,7 @@
     <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="build\$(AssemblyName).dll" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="build\$(AssemblyName).pdb" />
     <PackageFile Include="CoreBuild.Help.targets" TargetPath="build\CoreBuild.Help.targets" />
-    <PackageFile Include="CoreBuild.ColoredConsoleLogger" Version="1.1.0" Kind="Dependency" />
+    <PackageFile Include="CoreBuild.ColoredConsoleLogger" Version="1.1.1" Kind="Dependency" />
   </ItemGroup>
 
   <ItemGroup>
