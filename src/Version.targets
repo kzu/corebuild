@@ -4,7 +4,6 @@
   <PropertyGroup>
     <GitDefaultVersion>42.42.42-dev</GitDefaultVersion>
     <GitSkipCache>true</GitSkipCache>
-    <GitIgnoreTagVersion>true</GitIgnoreTagVersion>
     <GitCommitsRelativeTo>$(MSBuildThisFileDirectory.TrimEnd('\'))</GitCommitsRelativeTo>
   </PropertyGroup>
 

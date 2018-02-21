@@ -17,6 +17,14 @@ skip_commits:
 nuget:
   project_feed: true
   disable_publish_on_pr: true
+
+deploy:
+  - provider: NuGet
+    api_key:
+      secure: uY/U1R+UWPZBitJVqdNu6ttxZPuZeRoM4iUhYLeIMv8028s32s8vYwHMarF3zHdG
+    artifact: Package
+    on:
+      appveyor_repo_tag: true
   
 artifacts:
   - path: 'out\*.nupkg'
