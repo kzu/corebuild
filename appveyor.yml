@@ -4,7 +4,7 @@ build_script:
   - cmd: echo /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" >> msbuild.rsp
   - cmd: mkdir %TEMP%\packages || echo Local packages directory already exists
   - cmd: msbuild src\corebuild.nuproj /t:restore
-  - cmd: msbuild src\corebuild.nuproj /t:build
+  - cmd: msbuild src\corebuild.nuproj
 
 nuget:
   project_feed: true
