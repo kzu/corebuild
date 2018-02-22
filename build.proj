@@ -2,7 +2,7 @@
 	This is a sample default build script that showcases the capabilities 
 	of corebuild. Feel free to remove all comments and sample elements.	
 -->
-<Project Sdk="CoreBuild/0.5.0-*" TreatAsLocalProperty="Configuration" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="CoreBuild/1.0.0-alpha" TreatAsLocalProperty="Configuration" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Properties and Targets documentation can be rendered by running the 
        Help target provided by the CoreBuild.Help package, which is referenced 
        automatically 

@@ -13,7 +13,7 @@ support in your build scripts.
 Just create your SDK-style MSBuild script project as follows:
 
 ```xml
-<Project Sdk="CoreBuild/0.5.0-*">
+<Project Sdk="CoreBuild/1.0.0-alpha">
 	<!-- Your properties, targets and PackageReference items here -->
 </Project>
 ```
