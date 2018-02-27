@@ -29,13 +29,13 @@ the new `build.proj` file, typically your repository root.
 From a PowerShell command prompt:
 
 ```
-curl https://bit.ly/corebuild -o build.proj; msbuild build.proj /nologo /v:m; msbuild build.proj /nologo /t:help
+curl http://corebuild.io/build.proj -o build.proj; msbuild /nologo /v:m /t:configure; msbuild /nologo /t:help
 ```
 
 From a regular command prompt using curl.exe:
 
 ```
-curl -k -L https://bit.ly/corebuild -o build.proj && msbuild build.proj /nologo /v:m && msbuild build.proj /nologo /t:help
+curl -k -L http://corebuild.io/build.proj -o build.proj && msbuild /nologo /v:m /t:configure && msbuild /nologo /t:help
 ```
 
 This will download the [sample project](https://github.com/kzu/corebuild/blob/master/build.proj), 
