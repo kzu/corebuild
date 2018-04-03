@@ -128,7 +128,21 @@ Help:
                    marketplace and nuget.org respectively.
         - Run: Installs the main VSIX into VS Experimental and runs it
         - Test: Runs unit tests
+```
 
+Note that the documentation can be wrapped in sequences of `=` or `*` which is a very common 
+practice in MSBuild targets. You can also further tweak what Help reports by setting the various Help* properties.
+
+`Help` checks for **CoreBuild Standard** compliance when run, as shown above. Non-compliance will
+generate a build warning with the code `CB01` which can be disabled with the `/nowarn:CB01` MSBuild 
+switch.
+
+### Customizing Help
+
+The following properties are rendered with lower verbosity and show how to customize what gets 
+emitted when running `Help`:
+
+```
   Help: properties to customize what 'Help' reports
         - HelpExclude: Regex to evaluate against property and target names for exclusion in help. Defaults to '$^'
         - HelpImports: Whether to get help for imported files. Defaults to 'false'
@@ -138,13 +152,6 @@ Help:
         - HelpSearch: Regex used to do a full text search across properties, targets and their documentation
         - HelpTargets: Whether to get help on public targets. Defaults to 'true'
 ```
-
-Note that the documentation can be wrapped in sequences of `=` or `*` which is a very common 
-practice in MSBuild targets. You can also further tweak what Help reports by setting the various Help* properties.
-
-`Help` checks for **CoreBuild Standard** compliance when run, as shown above. Non-compliance will
-generate a build warning with the code `CB01` which can be disabled with the `/nowarn:CB01` MSBuild 
-switch.
 
 ## Boostrapping
 
