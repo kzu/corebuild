@@ -65,7 +65,7 @@ in an MSBuild project or script. The basic heuristics are simple:
 * Any property or target that doesn't start with an underscore is considered public
 * Any XML comment right before the target or property is considered its documentation.
 
-Here is an examples of the output of running `msbuild /t:help` on an MSBuild project with 
+Here is an example of the output of running `msbuild /t:help` on an MSBuild project with 
 the package installed:
 
 Source:
