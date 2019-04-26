@@ -19,7 +19,7 @@ nuget:
   disable_publish_on_pr: true
 
 deploy:
-  - Environment: NuGet
+  - provider: Environment
     name: NuGet
     artifact: Package
     on:
