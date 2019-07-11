@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
@@ -11,6 +11,7 @@
     <Description>Provides the Help target that dynamically lists available targets and properties in the current project.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>msbuild corebuild ci</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/kzu/corebuild/master/docs/corebuild-32.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/kzu/corebuild/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kzu/corebuild/</PackageProjectUrl>
 
@@ -23,9 +24,6 @@
 
   <ItemGroup>
     <None Remove="Properties\launchSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Properties\launchSettings.json" />
   </ItemGroup>
 
@@ -50,7 +48,7 @@
     <PackageFile Include="$(OutputPath)$(AssemblyName).dll" TargetPath="build\$(AssemblyName).dll" />
     <PackageFile Include="$(OutputPath)$(AssemblyName).pdb" TargetPath="build\$(AssemblyName).pdb" />
     <PackageFile Include="CoreBuild.Help.targets" TargetPath="build\CoreBuild.Help.targets" />
-    <PackageFile Include="CoreBuild.ColoredConsoleLogger" Version="1.1.1" Kind="Dependency" />
+    <PackageFile Include="CoreBuild.ColoredConsoleLogger" Version="1.1.1" Kind="Dependency" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>

@@ -34,6 +34,9 @@ namespace CoreBuild
         [Required]
         public string HelpExclude { get; set; } = "$^";
 
+        [Required]
+        public bool UseColors { get; set; }
+
         /// <summary>
         /// Explicit properties to always include in documentation, 
         /// regardless of whether they are from imported targets.
@@ -101,11 +104,15 @@ namespace CoreBuild
 
             if (standard)
             {
-                help.AppendLine("Standard: {YES:LawnGreen} √ (Configure, Build and Test targets supported)").AppendLine();
+                help.AppendLine(UseColors ?
+                    "Standard: {YES:LawnGreen} √ (Configure, Build and Test targets supported)" :
+                    "Standard: YES √ (Configure, Build and Test targets supported)").AppendLine();
             }
             else
             {
-                help.AppendLine("Standard: {NO:Tomato} x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io").AppendLine();
+                help.AppendLine(UseColors ?
+                    "Standard: {NO:Tomato} x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io" :
+                    "Standard: NO x (Missing Configure, Build, Test or Run targets. Lean more at http://corebuild.io").AppendLine();
                 Log.LogWarning(null, "CB01", null, null, 0, 0, 0, 0, "This project is NOT CoreBuild Standard compatible. Please provide Configure, Build and Test targets. Lean more at http://corebuild.io");
             }
 
@@ -163,7 +170,9 @@ namespace CoreBuild
                         if (isMeta)
                             builder.AppendLine().Append($"\t- {prop.Name}");
                         else
-                            builder.AppendLine().Append($"\t- {{{prop.Name}:Aqua}}");
+                            builder.AppendLine().Append(UseColors ?
+                                $"\t- {{{prop.Name}:Aqua}}" :
+                                $"\t- {prop.Name}");
 
                         if (!string.IsNullOrWhiteSpace(candidate.Comment))
                             AppendComment(builder, prop.Name, candidate.Comment);
@@ -219,7 +228,9 @@ namespace CoreBuild
                     if (alwaysInclude.Contains(target.Name) || SatisfiesSearch(target.Name) || SatisfiesSearch(candidate.Comment))
                     {
                         hasTargets = true;
-                        targetsHelp.AppendLine().Append($"\t- {{{target.Name}:Yellow}}");
+                        targetsHelp.AppendLine().Append(UseColors ?
+                            $"\t- {{{target.Name}:Yellow}}" :
+                            $"\t- {target.Name}");
                         if (!string.IsNullOrWhiteSpace(candidate.Comment))
                             AppendComment(targetsHelp, target.Name, candidate.Comment);
                     }

@@ -16,15 +16,20 @@
     <HelpExclude Condition="'$(HelpExclude)' == ''">$^</HelpExclude>
     <!-- Regex used to do a full text search across properties, targets and their documentation -->
     <HelpSearch Condition="'$(HelpSearch)' == ''"></HelpSearch>
+    <!-- Whether to use colors when rendering messages. Defaults to 'false'. -->
+    <ColoredConsole Condition="'$(ColoredConsole)' != 'true'">false</ColoredConsole>
   </PropertyGroup>
 
   <Target Name="Help" DependsOnTargets="_ConfigureColoredLogger">
-    <Message Condition="'$(ColoredConsole)' == 'true'" Text="{ __        __          
+    <Message Condition="$(ColoredConsole)" Text="{ __        __          
 /   _  _ _|__)   .| _| 
 \__(_)| (-|__)|_|||(_| 
 :Highlight}" />
-    <Help Condition="'$(ColoredConsole)' == 'true'" 
-          HelpProject="$(HelpProject)"
+    <Message Condition="'$(ColoredConsole)' != 'true'" Text="__        __          
+/   _  _ _|__)   .| _| 
+\__(_)| (-|__)|_|||(_| 
+" />
+    <Help HelpProject="$(HelpProject)"
           HelpImports="$(HelpImports)"
           HelpProperties="$(HelpProperties)"
           HelpTargets="$(HelpTargets)"
@@ -32,7 +37,8 @@
           HelpExclude="$(HelpExclude)"
           HelpProperty="@(HelpProperty)"
           HelpTarget="@(HelpTarget)"
-          HelpSearch="$(HelpSearch)"/>
+          HelpSearch="$(HelpSearch)"
+          UseColors="$(ColoredConsole)"/>
   </Target>
 
   <Target Name="_ConfigureColoredLogger" Condition="'$(ColoredConsole)' != 'true'" >
