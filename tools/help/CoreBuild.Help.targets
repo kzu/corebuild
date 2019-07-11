@@ -41,9 +41,10 @@
           EchoOff="true"
           StandardOutputImportance="low" />
     <!-- Re-run /t:Help with the new configuration -->    
-    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:Help /nologo /v:m /noautoresponse'
+    <Exec Command='"$(MSBuildBinPath)/MSBuild.exe" "$(MSBuildProjectFullPath)" /t:Help /nologo /v:m /noautoresponse @msbuild.rsp /bl:help.binlog'
           EchoOff="true" />
-    <Message Text="The next 'Help' run will have colored output :)" />
+    <Delete Files="help.binlog" />
+    <Message Text="The next 'Help' run will have colored output :)" Importance="high" />
   </Target>
 
 </Project>
